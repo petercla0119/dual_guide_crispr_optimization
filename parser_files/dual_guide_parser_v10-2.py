@@ -22,15 +22,15 @@ Original file is located at
 3.   Detect whether any guide or read truncation is necessary.
 4.   Identify matching read groups across R1 and R2.
 5.   Reduce the datasets to the read groups that match in R1 and R2.
-6.   Split into 'hits.\*'  and 'recombinants.\*'.  
+6.   Split into 'hits.\*'  and 'recombinants.\*'.
 'hits.\*' denotes read group matches and the protospacers match.
 'recombinants.\*' denotes read group matches but one or more protospacers does not.
 7.   Export 'hits.\*' and 'recombinants.\*' per fastq.
 
 ### Notes on data for testing:
-- **20200513_library_1_2_unbalanced_dJR051.csv** = All elements of the dual sgRNA library. Sequence from protospacer_A and protospacer_B columns must be present in the same row to be considered a match.  
-- **UDP0011_S5_R1_001.fastq.gz** = Final 19 bases of each read should match the final 19 bases of "protospacer_A" sequence from "20200513_library_1_2_unbalanced_dJR051.csv".  
-- **UDP0011_S5_R2_001.fastq.gz** = First 20 bases of each read should match reverse complement of "protospacer_B" sequence from "20200513_library_1_2_unbalanced_dJR051.csv".  
+- **20200513_library_1_2_unbalanced_dJR051.csv** = All elements of the dual sgRNA library. Sequence from protospacer_A and protospacer_B columns must be present in the same row to be considered a match.
+- **UDP0011_S5_R1_001.fastq.gz** = Final 19 bases of each read should match the final 19 bases of "protospacer_A" sequence from "20200513_library_1_2_unbalanced_dJR051.csv".
+- **UDP0011_S5_R2_001.fastq.gz** = First 20 bases of each read should match reverse complement of "protospacer_B" sequence from "20200513_library_1_2_unbalanced_dJR051.csv".
 ** The major change in V3 of this code is matching sequences for the guides using all UPPER CASE bases intead of being case-sensitive."
 ** V8 automatically detects whether the first base of the reads and/or guides is G and acts accordingly. The result may be essentially running 19bp matches. Users may also set manually.
 ** V9 adds the ability to match guide 2 to read 1 and the reverse complement of guide 1 to read 2 in addition to the standard workflow.
@@ -39,26 +39,28 @@ Original file is located at
 # 0.   Set up notebook.
 """
 
-import os
-#from google.colab import drive
-import numpy as np
+# %% Set up notebook
+
+# import os
+# from google.colab import drive
+# import numpy as np
 import pandas as pd
-import math
-import sys
-import joblib
-import subprocess
-import argparse
+# import math
+# import sys
+# import joblib
+# import subprocess
+# import argparse
 import gzip
-import textwrap
+# import textwrap
 import warnings
 
 #!pip install --upgrade tables
 #! pip install biopython
 
-import tables
+# import tables
 
-import requests
-from Bio import SeqIO
+# import requests
+# from Bio import SeqIO
 from Bio.Seq import reverse_complement
 from Bio.SeqIO.QualityIO import FastqGeneralIterator
 from itertools import islice
@@ -70,92 +72,94 @@ from itertools import islice
 
 # Set  options for testing.
 
-#guides_file = "20200513_library_1_2_unbalanced_dJR051.csv"
-#r1_file = "UDP0011_S5_R1_001.fastq.gz"
-#r2_file = "UDP0011_S5_R2_001.fastq.gz"
-#N_rows = 2500 # Speed up testing, this just reads the first 10K sequences.
-#check_length = 500 # top and bottom of the array, how far to check for whether composed with G.
-#guide_1_offset = -999 # -999 is the sentinel value
-#guide_2_offset = -999 # -999 is the sentinel value
-#read_1_offset = -999 # -999 is the sentinel value
-#read_2_offset = -999 # -999 is the sentinel value
-#purity = 0.95
-#check_reverse = True
+guides_file = "/Users/Claire/Downloads/git_clones/dual_guide_crispr_optimization/parser_files/20200513_library_1_2_unbalanced_dJR051.txt"
+r1_file = "/Users/Claire/Downloads/git_clones/dual_guide_crispr_optimization/parser_files/hits.JH8105_1_S1_L001_R1_001.fastq.gz"
+r2_file = "/Users/Claire/Downloads/git_clones/dual_guide_crispr_optimization/parser_files/hits.JH8105_1_S1_L001_R2_001.fastq.gz"
+N_rows = 1500 # Speed up testing, this just reads the first 10K sequences.
+check_length = 500 # top and bottom of the array, how far to check for whether composed with G.
+guide_1_offset = -999 # -999 is the sentinel value
+guide_2_offset = -999 # -999 is the sentinel value
+read_1_offset = -999 # -999 is the sentinel value
+read_2_offset = -999 # -999 is the sentinel value
+purity = 0.95
+check_reverse = True
 
 # Set the options for production.
 
-parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description=textwrap.dedent('''\
-
-#Thanks for trying the dual_guide_parser from CARD + iNDI + DTi.
-#To run this code, you will need to specify the guides_file, this is a file similar to the example 20200513_library_1_2_unbalanced_dJR051.csv.
-#You will need to specify a pair of R1 and R2 files, such as UDP0007_S1_R1_001.fastq.gz and UDP0007_S1_R2_001.fastq.gz.
-#You can also specify the number of read groups you are interested for testing the tool, this relates to the option n_groups.
-#This will only read that many readgroups from the R1 and R2 files, allowing you to speed things up a bit.
-#This code must be run from the working directory that contains the R1 and R2 files, but the guides_file can be anywhere, just
-#specify a full path to the guides file like ~/Desktop/20200513_library_1_2_unbalanced_dJR051.csv.
-#This code attempts to automatically equalize guides and reads. In other words,
-#it will attempt to cut out letters that begin a guide as a rule, or a read. You may also specify these settings
-#manually.
-#This is best run on a large RAM / high CPU set up as the files are quite large.
-#Finally, to run this code, you will need several packages, including biopython. To see the required packages listed, run with the -h option.
+# parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description=textwrap.dedent('''\
 #
-#'''))
-parser.add_argument('--packages', help='Request for packages required to run, and how to install.', action='store_true')
-parser.add_argument('--guides_file', type=str, default='missing', help='Mandatory input filepath. This is a file similar to the example 20200513_library_1_2_unbalanced_dJR051.csv. This can be a complete filepath')
-parser.add_argument('--r1_file', type=str, default='missing', help='Mandatory input file name. An R1 file in your working directory.')
-parser.add_argument('--r2_file', type=str, default='missing', help='Mandatory input file name. An R2 file in your working directory.')
-parser.add_argument('--N_reads', type=int, default=0, help='Optional number of readgroups to test. An integer.')
-parser.add_argument('--guide_1_offset', type=int, default = -999, help='# of characters to truncate from the left of the protospacer_A. Read truncation is not automatic, set accordingly. Default = 0.')
-parser.add_argument('--read_1_offset', type=int, default = -999, help='# of characters to truncate from the left of read_1. Read truncation is not automatic, set accordingly. Default = 0.')
-parser.add_argument('--guide_2_offset', type=int, default = -999, help='# of characters to truncate from the left of the protospacer_B. A Read truncation is not automatic, set accordingly. Default = 0.')
-parser.add_argument('--read_2_offset', type=int, default = -999, help='# of characters to truncate from the left of read_2. Read truncation is not automatic, set accordingly. Default = 0.')
-parser.add_argument('--purity', type=float, default = 0.95, help='minimum percentage of reads with the same beginning to be cut.')
-parser.add_argument('--check_length', type=int, default=500, help='# of rows on the bottom and top of the array to check for concordance of starting letter.')
-parser.add_argument('--check_reverse', action='store_true', help='# match reads against both guide1+reverse_comp(guide2) and guide2_reverse_comp(guide1)')
-
-args = parser.parse_args()
-
-if(args.packages):
-  print("Must have numpy and pandas available. \n Additionally, must install biopython.")
-  print("To install biopython, run pip install biopython, or, if using conda,")
-  print("conda install -c conda-forge biopython")
-  quit()
-
-print("#"*46)
-print("")
-print("Here is some basic info on the command you are about to run.")
-print("Python version info...")
-print(sys.version)
-print("CLI argument info...")
-print("The guides file you are using is", args.guides_file, ".")
-print("The r1 file you are using is", args.r1_file, ".")
-print("The r2 file you are using is", args.r2_file, ".")
-print("How many read groups are only for a quick test and not the full set?", args.N_reads, ".")
-print("")
-print("#"*46)
-
-guides_file = args.guides_file
-r1_file = args.r1_file
-r2_file = args.r2_file
-N_reads = args.N_reads
-N_rows = args.N_reads
-guide_1_offset = args.guide_1_offset
-guide_2_offset = args.guide_2_offset
-read_1_offset = args.read_1_offset
-read_2_offset = args.read_2_offset
-check_length = args.check_length
-purity = args.purity
-check_reverse = args.check_reverse
+# #Thanks for trying the dual_guide_parser from CARD + iNDI + DTi.
+# #To run this code, you will need to specify the guides_file, this is a file similar to the example 20200513_library_1_2_unbalanced_dJR051.csv.
+# #You will need to specify a pair of R1 and R2 files, such as UDP0007_S1_R1_001.fastq.gz and UDP0007_S1_R2_001.fastq.gz.
+# #You can also specify the number of read groups you are interested for testing the tool, this relates to the option n_groups.
+# #This will only read that many readgroups from the R1 and R2 files, allowing you to speed things up a bit.
+# #This code must be run from the working directory that contains the R1 and R2 files, but the guides_file can be anywhere, just
+# #specify a full path to the guides file like ~/Desktop/20200513_library_1_2_unbalanced_dJR051.csv.
+# #This code attempts to automatically equalize guides and reads. In other words,
+# #it will attempt to cut out letters that begin a guide as a rule, or a read. You may also specify these settings
+# #manually.
+# #This is best run on a large RAM / high CPU set up as the files are quite large.
+# #Finally, to run this code, you will need several packages, including biopython. To see the required packages listed, run with the -h option.
+# #
+# #'''))
+# parser.add_argument('--packages', help='Request for packages required to run, and how to install.', action='store_true')
+# parser.add_argument('--guides_file', type=str, default='missing', help='Mandatory input filepath. This is a file similar to the example 20200513_library_1_2_unbalanced_dJR051.csv. This can be a complete filepath')
+# parser.add_argument('--r1_file', type=str, default='missing', help='Mandatory input file name. An R1 file in your working directory.')
+# parser.add_argument('--r2_file', type=str, default='missing', help='Mandatory input file name. An R2 file in your working directory.')
+# parser.add_argument('--N_reads', type=int, default=0, help='Optional number of readgroups to test. An integer.')
+# parser.add_argument('--guide_1_offset', type=int, default = -999, help='# of characters to truncate from the left of the protospacer_A. Read truncation is not automatic, set accordingly. Default = 0.')
+# parser.add_argument('--read_1_offset', type=int, default = -999, help='# of characters to truncate from the left of read_1. Read truncation is not automatic, set accordingly. Default = 0.')
+# parser.add_argument('--guide_2_offset', type=int, default = -999, help='# of characters to truncate from the left of the protospacer_B. A Read truncation is not automatic, set accordingly. Default = 0.')
+# parser.add_argument('--read_2_offset', type=int, default = -999, help='# of characters to truncate from the left of read_2. Read truncation is not automatic, set accordingly. Default = 0.')
+# parser.add_argument('--purity', type=float, default = 0.95, help='minimum percentage of reads with the same beginning to be cut.')
+# parser.add_argument('--check_length', type=int, default=500, help='# of rows on the bottom and top of the array to check for concordance of starting letter.')
+# parser.add_argument('--check_reverse', action='store_true', help='# match reads against both guide1+reverse_comp(guide2) and guide2_reverse_comp(guide1)')
+#
+# args = parser.parse_args()
+#
+# if(args.packages):
+#   print("Must have numpy and pandas available. \n Additionally, must install biopython.")
+#   print("To install biopython, run pip install biopython, or, if using conda,")
+#   print("conda install -c conda-forge biopython")
+#   quit()
+#
+# print("#"*46)
+# print("")
+# print("Here is some basic info on the command you are about to run.")
+# print("Python version info...")
+# print(sys.version)
+# print("CLI argument info...")
+# print("The guides file you are using is", args.guides_file, ".")
+# print("The r1 file you are using is", args.r1_file, ".")
+# print("The r2 file you are using is", args.r2_file, ".")
+# print("How many read groups are only for a quick test and not the full set?", args.N_reads, ".")
+# print("")
+# print("#"*46)
+#
+# guides_file = args.guides_file
+# r1_file = args.r1_file
+# r2_file = args.r2_file
+# N_reads = args.N_reads
+# N_rows = args.N_reads
+# guide_1_offset = args.guide_1_offset
+# guide_2_offset = args.guide_2_offset
+# read_1_offset = args.read_1_offset
+# read_2_offset = args.read_2_offset
+# check_length = args.check_length
+# purity = args.purity
+# check_reverse = args.check_reverse
 
 # Commented out IPython magic to ensure Python compatibility.
 # %tb
-
+# %% 1. Import data
 """# 1. Import data, this includes concensus guides and R1 + R2 fastqs."""
 
 # Import data to pandas.
-guides_df = pd.read_csv(guides_file, engine='c')
-#
-# # Import R1s and R2s.
+# guides_df = pd.read_csv(guides_file, engine='c')
+# Modify based on guide file format - Guide file received was in txt format
+guides_df = pd.read_csv(guides_file, sep='\t')
+
+"""# # Import R1s and R2s.
 # ## pysam way Pysam introduces many other file format compatibilities such as
 # ## CRAM/SAM/BAM
 # if (N_rows == 0):
@@ -180,7 +184,13 @@ guides_df = pd.read_csv(guides_file, engine='c')
 # Consider the following suggestions if so.
 # use to_dict for compatibility with more file types and for true dictionary
 # functionality. If files too big, use .index.
-# Otherwise, if more memory needed, instantiate as a list
+# Otherwise, if more memory needed, instantiate as a list """
+
+# With open the gzip files (r1 and r2) in reading mode ('rt') and assign it to variable ('r1' and 'r2', respectively).
+# Initialize 'r1_it' iterator to iterate over contents in the first file with 'FastqqGeneralIterator'
+# Use of backslash ('\') is a continuation of the 'with' statement across multiple lines of code for better readability
+# Check 'N_rows' is empty. Then create new dataframe from iterator. Dataframe has three columns.
+# Slice 'r1_it' and 'r2_it' from (0) to 'N_rows'. Then create dataframes from the sliced iterator
 with gzip.open(r1_file, mode = 'rt') as r1, \
      gzip.open(r2_file, mode = 'rt') as r2:
   r1_it = FastqGeneralIterator(r1)
@@ -196,6 +206,7 @@ with gzip.open(r1_file, mode = 'rt') as r1, \
                          columns=['title', 'seq', 'qual'])
 
 # Get the index of all sequences with at least one unacceptable quality base
+# Access 'seq' column in 'r1_df' and check each string to see it contains the character 'N'. Returns bool
 removed_r1 = r1_df.seq.str.contains('N')
 removed_r2 = r2_df.seq.str.contains('N')
 
@@ -352,6 +363,8 @@ if check_reverse:
 r1_df.loc[:,'guide_seq'] = [x[read_1_offset:read_1_end] for x in r1_df.seq]
 r2_df.loc[:,'guide_seq'] = [x[read_2_offset:read_2_end] for x in r2_df.seq]
 
+# %% 2. Identify matching read groups
+
 """# 2. Identify matching read groups across R1 and R2."""
 
 # Pull the read groups from R1 and R2. Make a concensus read group list.
@@ -373,8 +386,8 @@ print(f"R1 had {r1_N_attempted_read_groups} potential read groups, of these {r1_
 print(f"{sum(all_removed)} potential read groups were removed for poor quality reads")
 print("#"*46)
 
+# %% 3. Reduce R1 and R2 to only those in the concensus_read_groups df.
 """# 3. Reduce the datasets to the read groups that match in R1 and R2.
-
 """
 
 # Reduce R1 and R2 to only those in the concensus_read_groups df.
@@ -387,6 +400,7 @@ r2_df['in_consensus'] = r2_df.read_group.isin(consensus_read_list)
 r1_reduced_df = r1_df[r1_df['in_consensus'] == True]
 r2_reduced_df = r2_df[r1_df['in_consensus'] == True]
 
+# %% 4. Split data into two dataframes
 """# 4. Split into 'hits.\*'  and 'recombinants.\*'.  
 'hits.\*' denotes read group matches and the protospacers match.
 'recombinants.\*' denotes read group matches but one or more protospacers does not.
@@ -458,8 +472,8 @@ r1_recombinant_df = r1_reduced_df[r1_reduced_df['hit'] == False]
 r2_hits_df = r2_reduced_df[r2_reduced_df['hit'] == True]
 r2_recombinant_df = r2_reduced_df[r2_reduced_df['hit'] == False]
 
+# %% 5. Export two dfs per fastq
 """# 5. Export 'hits.\*' and 'recombinants.\*' per fastq.
-
 """
 
 # Now its just back to the fastqs from here ... ouch. Start stacking the hits!
@@ -481,8 +495,6 @@ r1_recombinant_df['in_guide_library'] = r1_recombinant_df['uppercase_guide_seq']
 r2_recombinant_df['in_guide_library'] = r2_recombinant_df['uppercase_guide_seq'].isin(uppercase_r2_keys)
 
 """# Split R1 and R2 into true recombinants and failed recombinants based on the 'in_guide_library' flag. But first make a list of read groups that fail. Then pull these readgroups to split true recombinants and fails.
-
-
 """
 
 r1_failed_recombinants = r1_recombinant_df[r1_recombinant_df['in_guide_library'] == False]
