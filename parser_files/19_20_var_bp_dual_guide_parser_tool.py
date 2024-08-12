@@ -493,9 +493,19 @@ r2_recombinant_df.loc[:, 'in_guide_library'] = r2_recombinant_df['uppercase_guid
 r1_failed_recombinants = r1_recombinant_df[r1_recombinant_df['in_guide_library'] == False]
 r2_failed_recombinants = r2_recombinant_df[r2_recombinant_df['in_guide_library'] == False]
 
-recombinant_failed_readgroups = r1_failed_recombinants['read_group'].append(
-        r1_failed_recombinants['read_group']).unique()
+# Concatenate the two Series and then get unique values
+recombinant_failed_readgroups = pd.concat([
+    r1_failed_recombinants['read_group'],
+    r1_failed_recombinants['read_group']
+]).unique()
+
+# Calculate the number of unique 'big fails'
 N_big_fails = len(recombinant_failed_readgroups)
+
+# Identify 'big_fail' in r1_recombinant_df and r2_recombinant_df
+# Use .loc[] to explicitly set values in the DataFrame
+r1_recombinant_df.loc[:, 'big_fail'] = r1_recombinant_df['read_group'].isin(recombinant_failed_readgroups)
+r2_recombinant_df.loc[:, 'big_fail'] = r2_recombinant_df['read_group'].isin(recombinant_failed_readgroups)
 
 r1_recombinant_df['big_fail'] = r1_recombinant_df['read_group'].isin(recombinant_failed_readgroups)
 r2_recombinant_df['big_fail'] = r2_recombinant_df['read_group'].isin(recombinant_failed_readgroups)
