@@ -5,6 +5,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
 import gzip
 import warnings
@@ -280,41 +281,95 @@ r1_df.loc[:,'guide_seq'] = [x[read_1_offset:read_1_end] for x in r1_df.seq]
 #
 # # Display the result
 # print(r1_df.sort_values(by='min_hamming_distance', ascending=True))
-'''
+
 ################################################################
 # Option 3
 # Define the hamming_distance function
-def hamming_distance(seq1, seq2):
-    if len(seq1) != len(seq2):
-        raise ValueError("Sequences must be of the same length")
-    return sum(el1 != el2 for el1, el2 in zip(seq1, seq2))
+# def hamming_distance(seq1, seq2):
+#     if len(seq1) != len(seq2):
+#         raise ValueError("Sequences must be of the same length")
+#     return sum(el1 != el2 for el1, el2 in zip(seq1, seq2))
 
-# Define the function to compare sequences and calculate hamming distances
+# Previously used function below. Switched to more efficent function to avoid iterative looping (time consuming)
+# def compare_sequences_and_generate_df(read_df, guides_df, guide_key):
+#     """
+#     Compare the sequences in the guide_seq column of read_df to each element in the r1_key column of guides_df.
+#     Generate a new DataFrame with guide_seq, r1_key, and their Hamming distances.
+# 
+#     Parameters:
+#     read_df (DataFrame): DataFrame containing the read sequences.
+#     guides_df (DataFrame): DataFrame containing the guide sequences.
+#     guide_key (str): The column name in guides_df containing the guide sequences.
+# 
+# 
+#     Returns:
+#     DataFrame: DataFrame with columns 'guide_seq', 'r1_key', and 'hamming_distance'.
+#     """
+#     result_data = []
+#     for read_seq in read_df['guide_seq']:
+#         for guide_seq in guides_df[guide_key]:
+#             try:
+#                 distance = hamming_distance(read_seq, guide_seq)
+#                 result_data.append({'guide_seq': read_seq, guide_key: guide_seq, 'hamming_distance': distance})
+#             except ValueError:
+#                 continue  # Skip sequences of unequal length
+#     result_df = pd.DataFrame(result_data).sort_values(by='hamming_distance', ascending=True)
+#     return result_df
+'''
+
+
+# Option 4
+# Function Below works, but would ideally be faster
+# TODO: ask MM how to make it faster?
 def compare_sequences_and_generate_df(read_df, guides_df, guide_key):
     """
-    Compare the sequences in the guide_seq column of read_df to each element in the r1_key column of guides_df.
-    Generate a new DataFrame with guide_seq, r1_key, and their Hamming distances.
+    Compare the sequences in the guide_seq column of read_df to each element in the guide_key column of guides_df.
+    Generate a new DataFrame with guide_seq, guide_key, and their Hamming distances.
 
     Parameters:
     read_df (DataFrame): DataFrame containing the read sequences.
     guides_df (DataFrame): DataFrame containing the guide sequences.
     guide_key (str): The column name in guides_df containing the guide sequences.
 
-
     Returns:
-    DataFrame: DataFrame with columns 'guide_seq', 'r1_key', and 'hamming_distance'.
+    DataFrame: DataFrame with columns 'guide_seq', guide_key, and 'hamming_distance'.
     """
-    result_data = []
-    for read_seq in read_df['guide_seq']:
-        for guide_seq in guides_df[guide_key]:
-            try:
-                distance = hamming_distance(read_seq, guide_seq)
-                result_data.append({'guide_seq': read_seq, guide_key: guide_seq, 'hamming_distance': distance})
-            except ValueError:
-                continue  # Skip sequences of unequal length
-    result_df = pd.DataFrame(result_data).sort_values(by='hamming_distance', ascending=True)
-    return result_df
+    print("Starting conversion of sequences to numpy arrays...")
+    def hamming_distance(seq1, seq2):
+        return np.sum(np.array(list(seq1)) != np.array(list(seq2)))
 
+    # Filter guides by sequence length to avoid unnecessary comparisons
+    read_df['length'] = read_df['guide_seq'].str.len()
+    guides_df['length'] = guides_df[guide_key].str.len()
+
+    print(f"Successfully filtered by length, {type(read_df)}")
+
+    # Perform a cross join and then filter by length
+    merged_df = read_df.merge(guides_df, on='length', suffixes=('_read', '_guide'))
+    print('successful crossjoin')
+    print(merged_df.head())
+
+    # Calculate Hamming distance
+    merged_df['hamming_distance'] = merged_df.apply(
+        lambda row: hamming_distance(row['guide_seq'], row[guide_key]), axis=1
+    )
+    print('successfully calculated hamming distance')
+
+    # Drop the length column as it's no longer needed
+    merged_df = merged_df.drop(columns=['length'])
+
+    # Return the result sorted by Hamming distance
+    return merged_df[['guide_seq', guide_key, 'hamming_distance']].sort_values(by='hamming_distance', ascending=True)
+
+
+
+# Sample data
+read_df_sample = r1_df.head(10)
+guides_df_sample = guides_df.head(10)
+
+# Run the function on the sample data
+result = compare_sequences_and_generate_df(read_df_sample, guides_df_sample, 'r1_key')
+print(result)
 
 # %% 3. Calculate the Hamming Distances
 
@@ -393,6 +448,7 @@ print(f'{len(r2_filtered)} gRNAs out of {len(r2_df)} total gRNAs in R2 have a Ha
 #######################################################################################################################
 # TODO:
 ''' Let's compare the read 2 to guide sequence in position 1 '''
+# Remember, read 2 is the reverse complement!
 #######################################################################################################################
 
 
