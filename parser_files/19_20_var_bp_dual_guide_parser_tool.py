@@ -70,16 +70,16 @@ from itertools import islice
 
 # Set  options for testing.
 
-guides_file = "/Users/Claire/Downloads/raw_sequencing/stmn2_library_unbalanced.csv"
-r1_file = "/Users/Claire/Downloads/raw_sequencing/JH8105_1_S1_L001_R1_001.fastq.gz"
-r2_file = "/Users/Claire/Downloads/raw_sequencing/JH8105_1_S1_L001_R2_001.fastq.gz"
-N_rows = 2500  # Speed up testing, this just reads the first 10K sequences.
-check_length = 500  # top and bottom of the array, how far to check for whether composed with G.
-guide_1_offset = -999  # -999 is the sentinel value
-guide_2_offset = -999  # -999 is the sentinel value
-read_1_offset = -999  # -999 is the sentinel value
-read_2_offset = -999  # -999 is the sentinel value
-purity = 0.95
+# guides_file = "/Users/Claire/Downloads/raw_sequencing/stmn2_library_unbalanced.csv"
+# r1_file = "/Users/Claire/Downloads/raw_sequencing/JH8105_1_S1_L001_R1_001.fastq.gz"
+# r2_file = "/Users/Claire/Downloads/raw_sequencing/JH8105_1_S1_L001_R2_001.fastq.gz"
+# N_rows = 2500  # Speed up testing, this just reads the first 10K sequences.
+# check_length = 500  # top and bottom of the array, how far to check for whether composed with G.
+# guide_1_offset = -999  # -999 is the sentinel value
+# guide_2_offset = -999  # -999 is the sentinel value
+# read_1_offset = -999  # -999 is the sentinel value
+# read_2_offset = -999  # -999 is the sentinel value
+# purity = 0.95
 
 # Set the options for production.
 
@@ -88,11 +88,11 @@ parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpForm
 Thanks for trying the dual_guide_parser from CARD + iNDI + DTi.
 To run this code, you will need to specify the guides_file, this is a file similar to the example 20200513_library_1_2_unbalanced_dJR051.csv.
 You will need to specify a pair of R1 and R2 files, such as UDP0007_S1_R1_001.fastq.gz and UDP0007_S1_R2_001.fastq.gz.
-You can also specify the number of read groups you are interested for testing the tool, this relates to the option n_groups. 
+You can also specify the number of read groups you are interested for testing the tool, this relates to the option n_groups.
 This will only read that many readgroups from the R1 and R2 files, allowing you to speed things up a bit.
-This code must be run from the working directory that contains the R1 and R2 files, but the guides_file can be anywhere, just 
+This code must be run from the working directory that contains the R1 and R2 files, but the guides_file can be anywhere, just
 specify a full path to the guides file like ~/Desktop/20200513_library_1_2_unbalanced_dJR051.csv.
-This code attempts to automatically equalize guides and reads. In other words, 
+This code attempts to automatically equalize guides and reads. In other words,
 it will attempt to cut out letters that begin a guide as a rule, or a read. You may also specify these settings
 manually.
 This is best run on a large RAM / high CPU set up as the files are quite large.
@@ -536,18 +536,6 @@ r2_true_recombinant_fastq_df = r2_true_recombinant_stacked_df
 
 r1_hits_out_file = "hits." + r1_file
 r2_hits_out_file = "hits." + r2_file
-
-# Extract the directory path from the file path
-directory = os.path.dirname(r1_hits_out_file)
-
-# Create the directory if it doesn't exist
-if not os.path.exists(directory):
-    os.makedirs(directory)
-
-r1_hits_fastq_df.to_csv(r1_hits_out_file, sep='\t', index=False, header=False, compression='gzip')
-r2_hits_fastq_df.to_csv(r2_hits_out_file, sep='\t', index=False, header=False, compression='gzip')
-
-
 r1_true_recombinant_out_file = "recombinants." + r1_file
 r2_true_recombinant_out_file = "recombinants." + r2_file
 r1_failed_recombinant_out_file = "fails." + r1_file
@@ -555,6 +543,8 @@ r2_failed_recombinant_out_file = "fails." + r2_file
 
 # List of output file paths
 output_files = [
+    r1_hits_out_file,
+    r2_hits_out_file,
     r1_true_recombinant_out_file,
     r2_true_recombinant_out_file,
     r1_failed_recombinant_out_file,
@@ -567,7 +557,8 @@ for file_path in output_files:
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-
+r1_hits_fastq_df.to_csv(r1_hits_out_file, sep='\t', index=False, header=False, compression='gzip')
+r2_hits_fastq_df.to_csv(r2_hits_out_file, sep='\t', index=False, header=False, compression='gzip')
 r1_true_recombinant_fastq_df.to_csv(r1_true_recombinant_out_file, sep='\t', index=False, header=False,
                                     compression='gzip')
 r2_true_recombinant_fastq_df.to_csv(r2_true_recombinant_out_file, sep='\t', index=False, header=False,
@@ -576,6 +567,13 @@ r1_failed_recombinant_fastq_df.to_csv(r1_failed_recombinant_out_file, sep='\t', 
                                       compression='gzip')
 r2_failed_recombinant_fastq_df.to_csv(r2_failed_recombinant_out_file, sep='\t', index=False, header=False,
                                       compression='gzip')
+# # Extract the directory path from the file path
+# directory = os.path.dirname(r1_hits_out_file)
+#
+# # Create the directory if it doesn't exist
+# if not os.path.exists(directory):
+#     os.makedirs(directory)
+
 
 """# Add some narrative.
 
