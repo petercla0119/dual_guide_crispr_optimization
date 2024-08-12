@@ -22,15 +22,15 @@ Original file is located at
 3.   Detect whether any guide or read truncation is necessary.
 4.   Identify matching read groups across R1 and R2.
 5.   Reduce the datasets to the read groups that match in R1 and R2.
-6.   Split into 'hits.\'  and 'recombinants.\'.  
+6.   Split into 'hits.\'  and 'recombinants.\'.
 'hits.\' denotes read group matches and the protospacers match.
 'recombinants.\' denotes read group matches but one or more protospacers does not.
 7.   Export 'hits.\' and 'recombinants.\' per fastq.
 
 ### Notes on data for testing:
-- **20200513_library_1_2_unbalanced_dJR051.csv** = All elements of the dual sgRNA library. Sequence from protospacer_A and protospacer_B columns must be present in the same row to be considered a match.  
-- **UDP0011_S5_R1_001.fastq.gz** = Final 19 bases of each read should match the final 19 bases of "protospacer_A" sequence from "20200513_library_1_2_unbalanced_dJR051.csv".  
-- **UDP0011_S5_R2_001.fastq.gz** = First 20 bases of each read should match reverse complement of "protospacer_B" sequence from "20200513_library_1_2_unbalanced_dJR051.csv".  
+- **20200513_library_1_2_unbalanced_dJR051.csv** = All elements of the dual sgRNA library. Sequence from protospacer_A and protospacer_B columns must be present in the same row to be considered a match.
+- **UDP0011_S5_R1_001.fastq.gz** = Final 19 bases of each read should match the final 19 bases of "protospacer_A" sequence from "20200513_library_1_2_unbalanced_dJR051.csv".
+- **UDP0011_S5_R2_001.fastq.gz** = First 20 bases of each read should match reverse complement of "protospacer_B" sequence from "20200513_library_1_2_unbalanced_dJR051.csv".
 ** The major change in V3 of this code is matching sequences for the guides using all UPPER CASE bases intead of being case-sensitive."
 ** V8 automatically detects whether the first base of the reads and/or guides is G and acts accordingly. The result may be essentially running 19bp matches. Users may also set manually.
 ** The above is also true for read 2.
