@@ -1,6 +1,5 @@
 # This file works solely with the guide library file - does not change or alter the counts or read fastq files
 
-
 # %% 0. Import/Setup
 import pandas as pd
 pd.set_option('display.max_rows', None)  # Show all rows
@@ -306,7 +305,7 @@ venn2(subsets = ((len(A_dups)-num_dup_A_and_B),(len(B_dups)-num_dup_A_and_B), nu
 plt.title("Venn Diagram of Duplicate Guides from Library")
 plt.show()
 
-# # %%
+# # %% Alternative code - accomplishes the same objective
 # # Try rewriting it to take in the library guide df
 # # Identify duplicates in either column A or column B
 # duplicates_in_A = guides_df_cols['protospacer_A'].duplicated(keep=False)
