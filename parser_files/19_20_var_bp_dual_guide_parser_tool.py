@@ -65,7 +65,7 @@ from itertools import islice
 # Comment out below after testing.
 
 # drive.mount('/content/drive/')
-# os.chdir("/content/drive/Shared drives/CARD_iNDI/scratch/dual_guide_parser")
+# os.chdir('/Users/Claire/PycharmProjects/dual_guide_crispr_optimization')
 # ! pwd
 
 # Set  options for testing.
@@ -507,9 +507,6 @@ N_big_fails = len(recombinant_failed_readgroups)
 r1_recombinant_df.loc[:, 'big_fail'] = r1_recombinant_df['read_group'].isin(recombinant_failed_readgroups)
 r2_recombinant_df.loc[:, 'big_fail'] = r2_recombinant_df['read_group'].isin(recombinant_failed_readgroups)
 
-r1_recombinant_df['big_fail'] = r1_recombinant_df['read_group'].isin(recombinant_failed_readgroups)
-r2_recombinant_df['big_fail'] = r2_recombinant_df['read_group'].isin(recombinant_failed_readgroups)
-
 r1_failed_recombinants_df = r1_recombinant_df[r1_recombinant_df['big_fail'] == True]
 r2_failed_recombinants_df = r2_recombinant_df[r2_recombinant_df['big_fail'] == True]
 r1_true_recombinants_df = r1_recombinant_df[r1_recombinant_df['big_fail'] == False]
@@ -540,20 +537,41 @@ r2_true_recombinant_fastq_df = r2_true_recombinant_stacked_df
 r1_hits_out_file = "hits." + r1_file
 r2_hits_out_file = "hits." + r2_file
 
+# Extract the directory path from the file path
+directory = os.path.dirname(r1_hits_out_file)
+
+# Create the directory if it doesn't exist
+if not os.path.exists(directory):
+    os.makedirs(directory)
+
 r1_hits_fastq_df.to_csv(r1_hits_out_file, sep='\t', index=False, header=False, compression='gzip')
 r2_hits_fastq_df.to_csv(r2_hits_out_file, sep='\t', index=False, header=False, compression='gzip')
 
+
 r1_true_recombinant_out_file = "recombinants." + r1_file
 r2_true_recombinant_out_file = "recombinants." + r2_file
+r1_failed_recombinant_out_file = "fails." + r1_file
+r2_failed_recombinant_out_file = "fails." + r2_file
+
+# List of output file paths
+output_files = [
+    r1_true_recombinant_out_file,
+    r2_true_recombinant_out_file,
+    r1_failed_recombinant_out_file,
+    r2_failed_recombinant_out_file
+]
+
+# Ensure all directories exist
+for file_path in output_files:
+    directory = os.path.dirname(file_path)
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+
 
 r1_true_recombinant_fastq_df.to_csv(r1_true_recombinant_out_file, sep='\t', index=False, header=False,
                                     compression='gzip')
 r2_true_recombinant_fastq_df.to_csv(r2_true_recombinant_out_file, sep='\t', index=False, header=False,
                                     compression='gzip')
-
-r1_failed_recombinant_out_file = "fails." + r1_file
-r2_failed_recombinant_out_file = "fails." + r2_file
-
 r1_failed_recombinant_fastq_df.to_csv(r1_failed_recombinant_out_file, sep='\t', index=False, header=False,
                                       compression='gzip')
 r2_failed_recombinant_fastq_df.to_csv(r2_failed_recombinant_out_file, sep='\t', index=False, header=False,
