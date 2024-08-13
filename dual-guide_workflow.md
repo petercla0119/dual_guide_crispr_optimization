@@ -35,7 +35,7 @@
 ```
 
 ```mermaid
-graph LR
+graph TB
 %% Low 1
     a:::hidden-.-l1(Low 1)-->l1_ln1(Lane 1)
         l1_ln1-->l1_ln1_r1(R1.fastq.gz)-->|Parser/Counts| c_l1(Collate Low 1)
@@ -45,7 +45,7 @@ graph LR
         l1_ln2-->l1_ln2_r1(R1.fastq.gz)-->|Parser/Counts| c_l1
         l1_ln2-->l1_ln2_r2(R2.fastq.gz)-->|Parser/Counts| c_l1
         %% l1_ln2-->l1_ln2_r3(R3.fastq.gz)
-            c_l1-->cc(Combine all samples)
+            c_l1-->cc(Output counts file)
 %% High 1
     b:::hidden-.-h1(High 1)-->h1_ln1(Lane 1)
         h1_ln1-->h1_ln1_r1(R1.fastq.gz)-->|Parser/Counts| c_h1(Collate High 1)
@@ -130,81 +130,89 @@ graph LR
     Demultiplex-->l3(Low 3)
     Demultiplex-->h3(High 3)
     
-    l1-->a1(R1.fastq.gz)
-    l1-->a2(R2.fastq.gz)
-    %% l1-->a3(R3.fastq.gz)
-    h1-->b1(R1.fastq.gz)
-    h1-->b2(R2.fastq.gz)
-    %%  h1-->b3(R3.fastq.gz)
-    l2-->c1(R1.fastq.gz)
-    l2-->c2(R2.fastq.gz)
-    %% l1-->c3(R3.fastq.gz)
-    h2-->d1(R1.fastq.gz)
-    h2-->d2(R2.fastq.gz)
-    %% h2-->d3(R3.fastq.gz)
-    l3-->e1(R1.fastq.gz)
-    l3-->e2(R2.fastq.gz)
-     %% l3-->e3(R3.fastq.gz)
-    h3-->f1(R1.fastq.gz)
-    h3-->f2(R2.fastq.gz)
+%%    l1-->a1(R1.fastq.gz)
+%%    l1-->a2(R2.fastq.gz)
+%%    %% l1-->a3(R3.fastq.gz)
+%%    h1-->b1(R1.fastq.gz)
+%%    h1-->b2(R2.fastq.gz)
+%%    %%  h1-->b3(R3.fastq.gz)
+%%    l2-->c1(R1.fastq.gz)
+%%    l2-->c2(R2.fastq.gz)
+%%    %% l1-->c3(R3.fastq.gz)
+%%    h2-->d1(R1.fastq.gz)
+%%    h2-->d2(R2.fastq.gz)
+%%    %% h2-->d3(R3.fastq.gz)
+%%    l3-->e1(R1.fastq.gz)
+%%    l3-->e2(R2.fastq.gz)
+%%     %% l3-->e3(R3.fastq.gz)
+%%    h3-->f1(R1.fastq.gz)
+%%    h3-->f2(R2.fastq.gz)
     %% h3-->f3(R3.fastq.gz)
 %%    a --> I("PCR \n (i5)")
 %%    I --> J(Clean \n Samples)
 %%    J --> K(Tag \n Station)
 %% Low 1
     l1-->l1_ln1(Lane 1)
-        l1_ln1-->l1_ln1_r1(R1.fastq.gz)
-        l1_ln1-->l1_ln1_r2(R2.fastq.gz)
+        l1_ln1-->l1_ln1_r1(R1.fastq.gz)-->|Parser/Counts| c_l1(Collate Low 1)
+        l1_ln1-->l1_ln1_r2(R2.fastq.gz)-->|Parser/Counts| c_l1
         %% l1_ln1-->l1_ln1_r3(R3.fastq.gz)
     l1-->l1_ln2(Lane 2)
-        l1_ln2-->l1_ln2_r1(R1.fastq.gz)
-        l1_ln2-->l1_ln2_r2(R2.fastq.gz)
+        l1_ln2-->l1_ln2_r1(R1.fastq.gz)-->|Parser/Counts| c_l1
+        l1_ln2-->l1_ln2_r2(R2.fastq.gz)-->|Parser/Counts| c_l1
         %% l1_ln2-->l1_ln2_r3(R3.fastq.gz)
 %% High 1
     h1-->h1_ln1(Lane 1)
-        h1_ln1-->h1_ln1_r1(R1.fastq.gz)
-        h1_ln1-->h1_ln1_r2(R2.fastq.gz)
+        h1_ln1-->h1_ln1_r1(R1.fastq.gz)-->|Parser/Counts| c_h1(Collate High 1)
+        h1_ln1-->h1_ln1_r2(R2.fastq.gz)-->|Parser/Counts| c_h1
         %% h1_ln1-->h1_ln1_r3(R3.fastq.gz)
     h1-->h1_ln2(Lane 2)
-        h1_ln2-->h1_ln2_r1(R1.fastq.gz)
-        h1_ln2-->h1_ln2_r2(R2.fastq.gz)
+        h1_ln2-->h1_ln2_r1(R1.fastq.gz)-->|Parser/Counts| c_h1
+        h1_ln2-->h1_ln2_r2(R2.fastq.gz)-->|Parser/Counts| c_h1
         %% h1_ln2-->h1_ln2_r3(R3.fastq.gz)   
 %% Low 2
     l2-->l2_ln1(Lane 1)
-        l2_ln1-->l2_ln1_r1(R1.fastq.gz)
-        l2_ln1-->l2_ln1_r2(R2.fastq.gz)
+        l2_ln1-->l2_ln1_r1(R1.fastq.gz)-->|Parser/Counts| c_l2(Collate Low 2)
+        l2_ln1-->l2_ln1_r2(R2.fastq.gz)-->|Parser/Counts| c_l2
         %% l2_ln1-->l2_ln1_r3(R3.fastq.gz)
     l2-->l2_ln2(Lane 2)
-        l2_ln2-->l2_ln2_r1(R1.fastq.gz)
-        l2_ln2-->l2_ln2_r2(R2.fastq.gz)
+        l2_ln2-->l2_ln2_r1(R1.fastq.gz)-->|Parser/Counts| c_l2
+        l2_ln2-->l2_ln2_r2(R2.fastq.gz)-->|Parser/Counts| c_l2
         %% l2_ln2-->l2_ln2_r3(R3.fastq.gz)
 %% High 2
     h2-->h2_ln1(Lane 1)
-        h2_ln1-->h2_ln1_r1(R1.fastq.gz)
-        h2_ln1-->h2_ln1_r2(R2.fastq.gz)
+        h2_ln1-->h2_ln1_r1(R1.fastq.gz)-->|Parser/Counts| c_h2(Collate High 2)
+        h2_ln1-->h2_ln1_r2(R2.fastq.gz)-->|Parser/Counts| c_h2
         %% h2_ln1-->h2_ln1_r3(R3.fastq.gz)
     h2-->h2_ln2(Lane 2)
-        h2_ln2-->h2_ln2_r1(R1.fastq.gz)
-        h2_ln2-->h2_ln2_r2(R2.fastq.gz)
+        h2_ln2-->h2_ln2_r1(R1.fastq.gz)-->|Parser/Counts| c_h2
+        h2_ln2-->h2_ln2_r2(R2.fastq.gz)-->|Parser/Counts| c_h2
         %% h2_ln2-->h2_ln2_r3(R3.fastq.gz)
 %% Low 3
     l3-->l3_ln1(Lane 1)
-        l3_ln1-->l3_ln1_r1(R1.fastq.gz)
-        l3_ln1-->l3_ln1_r2(R2.fastq.gz)
+        l3_ln1-->l3_ln1_r1(R1.fastq.gz)-->|Parser/Counts| c_l3(Collate Low 3)
+        l3_ln1-->l3_ln1_r2(R2.fastq.gz)-->|Parser/Counts| c_l3
         %% l3_ln1-->l3_ln1_r3(R3.fastq.gz)
     l3-->l3_ln2(Lane 2)
-        l3_ln2-->l3_ln2_r1(R1.fastq.gz)
-        l3_ln2-->l3_ln2_r2(R2.fastq.gz)
+        l3_ln2-->l3_ln2_r1(R1.fastq.gz)-->|Parser/Counts| c_l3
+        l3_ln2-->l3_ln2_r2(R2.fastq.gz)-->|Parser/Counts| c_l3
         %% l3_ln2-->l3_ln2_r3(R3.fastq.gz)
 %% High 3
     h3-->h3_ln1(Lane 1)
-        h3_ln1-->h3_ln1_r1(R1.fastq.gz)
-        h3_ln1-->h3_ln1_r2(R2.fastq.gz)
+        h3_ln1-->h3_ln1_r1(R1.fastq.gz)-->|Parser/Counts| c_h3(Collate High 3)
+        h3_ln1-->h3_ln1_r2(R2.fastq.gz)-->|Parser/Counts| c_h3
         %% h3_ln1-->h3_ln1_r3(R3.fastq.gz)
     h3-->h3_ln2(Lane 2)
-        h3_ln2-->h3_ln2_r1(R1.fastq.gz)
-        h3_ln2-->h3_ln2_r2(R2.fastq.gz)
+        h3_ln2-->h3_ln2_r1(R1.fastq.gz)-->|Parser/Counts| c_h3
+        h3_ln2-->h3_ln2_r2(R2.fastq.gz)-->|Parser/Counts| c_h3
         %% h3_ln2-->h3_ln2_r3(R3.fastq.gz)
+        
+    c_l1-->out_file(Output counts file)
+    c_h1-->out_file
+    c_l2-->out_file
+    c_h2-->out_file
+    c_l3-->out_file
+    c_h3-->out_file
+        
 ```
 
 ```
