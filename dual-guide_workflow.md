@@ -3,18 +3,18 @@
     graph TB
     A(CRISPRi iPSCs with mScarlet-STMN2)-->|Whole genome dual-sgRNA \n library transduction| B(Transduced iPSCs)
     B -->|+Dox| C("NGN2 induced i3 Neurons (d7)")
-    C --> E["FACS sort based on fluorescence \n (n=20 million)"]
+    C --> E["FACS sort based on fluorescence"]
 
-    E --> s1("Sample 1 \n (n=~6.5 million)")
-    E --> s2("Sample 2 \n (n=~6.5 million)")
-    E --> s3("Sample 3 \n (n=~6.5 million)")
+    E --> s1("Sample 1 \n (n=20 million)")
+    E --> s2("Sample 2 \n (n=20 million)")
+    E --> s3("Sample 3 \n (n=20 million)")
     
-    s1 -->|Low \n mScarlet-SMN2|L1(Low 1)-->|"Genomic Ext \n PCR (i5)" \n Cleaning \n Tag|pool{Pool}
-    s1 -->|High \n mScarlet-SMN2|H1(High 1)-->|"Genomic Ext \n PCR (i5)" \n Cleaning \n Tag|pool
-    s2 -->|Low \n mScarlet-SMN2|L2(Low 2)-->|"Genomic Ext \n PCR (i5)" \n Cleaning \n Tag|pool
-    s2 -->|High \n mScarlet-SMN2|H2(High 2)-->|"Genomic Ext \n PCR (i5)" \n Cleaning \n Tag|pool
-    s3 -->|Low \n mScarlet-SMN2|L3("Low 3")-->|"Genomic Ext \n PCR (i5)" \n Cleaning \n Tag|pool
-    s3 -->|High \n mScarlet-SMN2|H3(High 3)-->|"Genomic Ext \n PCR (i5)" \n Cleaning \n Tag|pool
+    s1 -->|Low \n mScarlet-SMN2|L1("Low 1 \n(n=~6.5 million)")-->|"Genomic Ext \n PCR (i5)" \n Cleaning \n Tag|pool{Pool}
+    s1 -->|High \n mScarlet-SMN2|H1("High 1 \n(n=~6.5 million)")-->|"Genomic Ext \n PCR (i5)" \n Cleaning \n Tag|pool
+    s2 -->|Low \n mScarlet-SMN2|L2("Low 2 \n(n=~6.5 million)")-->|"Genomic Ext \n PCR (i5)" \n Cleaning \n Tag|pool
+    s2 -->|High \n mScarlet-SMN2|H2("High 2 \n(n=~6.5 million)")-->|"Genomic Ext \n PCR (i5)" \n Cleaning \n Tag|pool
+    s3 -->|Low \n mScarlet-SMN2|L3("Low 3 \n(n=~6.5 million)")-->|"Genomic Ext \n PCR (i5)" \n Cleaning \n Tag|pool
+    s3 -->|High \n mScarlet-SMN2|H3("High 3 \n(n=~6.5 million)")-->|"Genomic Ext \n PCR (i5)" \n Cleaning \n Tag|pool
 
     pool---|Sequence|empty:::hidden
     empty-->lane1(Lane 1)-->Demultiplex
@@ -109,16 +109,16 @@ graph TB
     B -->|+Dox| C("NGN2 induced i3 Neurons (d7)")
     C --> E["FACS sort based on fluorescence \n (n=20 million)"]
 
-    E --> s1("Sample 1 \n (n=~6.5 million)")
-    E --> s2("Sample 2 \n (n=~6.5 million)")
-    E --> s3("Sample 3 \n (n=~6.5 million)")
+    E --> s1("Sample 1 \n (n=20 million)")
+    E --> s2("Sample 2 \n (n=20 million)")
+    E --> s3("Sample 3 \n (n=20 million)")
     
-    s1 -->|Low \n mScarlet-SMN2|L1(Low 1)-->|"Genomic Ext \n PCR (i5)" \n Cleaning \n Tag|pool{Pool}
-    s1 -->|High \n mScarlet-SMN2|H1(High 1)-->|"Genomic Ext \n PCR (i5)" \n Cleaning \n Tag|pool
-    s2 -->|Low \n mScarlet-SMN2|L2(Low 2)-->|"Genomic Ext \n PCR (i5)" \n Cleaning \n Tag|pool
-    s2 -->|High \n mScarlet-SMN2|H2(High 2)-->|"Genomic Ext \n PCR (i5)" \n Cleaning \n Tag|pool
-    s3 -->|Low \n mScarlet-SMN2|L3("Low 3")-->|"Genomic Ext \n PCR (i5)" \n Cleaning \n Tag|pool
-    s3 -->|High \n mScarlet-SMN2|H3(High 3)-->|"Genomic Ext \n PCR (i5)" \n Cleaning \n Tag|pool
+    s1 -->|Low \n mScarlet-SMN2|L1("Low 1 \n (n=~6.5 million)")-->|"Genomic Ext \n PCR (i5)" \n Cleaning \n Tag|pool{Pool}
+    s1 -->|High \n mScarlet-SMN2|H1("High 1 \n (n=~6.5 million)")-->|"Genomic Ext \n PCR (i5)" \n Cleaning \n Tag|pool
+    s2 -->|Low \n mScarlet-SMN2|L2("Low 2 \n (n=~6.5 million)")-->|"Genomic Ext \n PCR (i5)" \n Cleaning \n Tag|pool
+    s2 -->|High \n mScarlet-SMN2|H2("High 2 \n (n=~6.5 million)")-->|"Genomic Ext \n PCR (i5)" \n Cleaning \n Tag|pool
+    s3 -->|Low \n mScarlet-SMN2|L3("Low 3 \n (n=~6.5 million)")-->|"Genomic Ext \n PCR (i5)" \n Cleaning \n Tag|pool
+    s3 -->|High \n mScarlet-SMN2|H3("High 3 \n (n=~6.5 million)")-->|"Genomic Ext \n PCR (i5)" \n Cleaning \n Tag|pool
 
     pool---|Sequence|empty:::hidden
     empty-->lane1(Lane 1)-->Demultiplex
@@ -212,7 +212,72 @@ graph TB
     c_h2-->out_file
     c_l3-->out_file
     c_h3-->out_file
-        
+    
 ```
+
+
+``` mermaid
+graph TB
+%% Low 1
+    a:::hidden-.-l1(Low 1)-->l1_ln1(Lane 1)
+        l1_ln1-->l1_ln1_r1(R1.fastq.gz)
+        l1_ln1_r1---|Parser \n Sequence alignment and trimming|empty:::hidden
+    		empty-->p_out_hit(Hits fastq.gz \n Raw seqs of guides matching expected \n gRNA seq in position A U B \n Combines )
+    		empty-->p_out_recom(Recombinants fastq.gz)
+    		empty-->p_out_fail(Fails fastq.gz)
+    
+    		p_out_hit-->|MAGeCK Counts \n Map guide sequence to sgRNA_ID_A/gene \n Normalize counts values|counts_tbl
+       
+        l1_ln1-->l1_ln1_r2(R2.fastq.gz)-->|Parser/Counts| c_l1
+        %% l1_ln1-->l1_ln1_r3(R3.fastq.gz)
+    l1-->l1_ln2(Lane 2)
+        l1_ln2-->l1_ln2_r1(R1.fastq.gz)-->|Parser/Counts| c_l1
+        l1_ln2-->l1_ln2_r2(R2.fastq.gz)-->|Parser/Counts| c_l1
+        %% l1_ln2-->l1_ln2_r3(R3.fastq.gz)
+            c_l1-->cc(Output counts file)
+%% High 1
+    b:::hidden-.-h1(High 1)-->h1_ln1(Lane 1)
+        h1_ln1-->h1_ln1_r1(R1.fastq.gz)-->|Parser/Counts| c_h1(Collate High 1)
+        h1_ln1-->h1_ln1_r2(R2.fastq.gz)-->|Parser/Counts| c_h1
+        %% h1_ln1-->h1_ln1_r3(R3.fastq.gz)
+    h1-->h1_ln2(Lane 2)
+        h1_ln2-->h1_ln2_r1(R1.fastq.gz)-->|Parser/Counts| c_h1
+        h1_ln2-->h1_ln2_r2(R2.fastq.gz)-->|Parser/Counts| c_h1
+        %% h1_ln2-->h1_ln2_r3(R3.fastq.gz)   
+            c_h1-->cc
+
+
+```
+```python
+from graphviz import Digraph
+
+# Create a new directed graph
+flowchart = Digraph(comment='Hamming Distance Calculation')
+
+# Add nodes
+flowchart.node('A', 'Start')
+flowchart.node('B', 'Input two equal-length strings')
+flowchart.node('C', 'Initialize a counter to 0')
+flowchart.node('D', 'Iterate through each \n character in both strings')
+flowchart.node('E', 'Compare corresponding \n characters')
+flowchart.node('F', 'If characters differ, \n increment counter')
+flowchart.node('G', 'After loop ends, \n output the counter as Hamming distance')
+flowchart.node('H', 'End')
+
+# Add edges
+flowchart.edge('A', 'B')
+flowchart.edge('B', 'C')
+flowchart.edge('C', 'D')
+flowchart.edge('D', 'E')
+flowchart.edge('E', 'F')
+flowchart.edge('F', 'D')
+flowchart.edge('D', 'G', label='End of string')
+flowchart.edge('G', 'H')
+
+# Save the flowchart to a file and render it
+flowchart.render('hamming_distance_flowchart', format='png', cleanup=True)
+
+# Optional: Display the flowchart in a Jupyter notebook
+flowchart.view()
 
 ```
