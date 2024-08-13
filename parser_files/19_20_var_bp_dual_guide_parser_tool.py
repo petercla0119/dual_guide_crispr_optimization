@@ -202,6 +202,7 @@ with gzip.open(r1_file, mode='rt') as r1, \
                              columns=['title', 'seq', 'qual'])
 
 # Get the index of all sequences with at least one unacceptable quality base
+# Access 'seq' column in 'r1_df' and check each string to see it contains the character 'N'. Returns bool
 removed_r1 = r1_df.seq.str.contains('N')
 removed_r2 = r2_df.seq.str.contains('N')
 
@@ -231,7 +232,6 @@ print(f"Length of input read 2: {original_read_2_length}")
 
 guide_1_end = guide_1_length
 guide_2_end = guide_2_length
-
 
 def get_offset(df, c_length, purity, column, ltr):
     """
@@ -324,7 +324,6 @@ assert guide_2_length == guide_2_end - guide_2_offset, 'Oh no, fix guide_2!'
 r1_df.insert(loc=2, column='plus', value='+')
 r2_df.insert(loc=2, column='plus', value='+')
 
-
 def split_str(s: str) -> str:
     return s.split(" ", maxsplit=1)[0]
 
@@ -363,7 +362,7 @@ r2_df.loc[:, 'guide_seq'] = [x[read_2_offset:read_2_end] for x in r2_df.seq]
 r1_read_groups_df = r1_df[['read_group']]
 r2_read_groups_df = r2_df[['read_group']]
 
-consensus_read_groups_df = r1_read_groups_df.merge(r2_read_groups_df, on='read_group', how='inner')
+consensus_read_groups_df = r1_read_groups_df.merge(r2_read_groups_df, on ='read_group', how='inner')
 
 # Quantify obvious pair failures.
 
@@ -380,7 +379,6 @@ print(f"{sum(all_removed)} potential read groups were removed for poor quality r
 print("#" * 46)
 
 """# 3. Reduce the datasets to the read groups that match in R1 and R2.
-
 """
 
 # Reduce R1 and R2 to only those in the concensus_read_groups df.
@@ -443,6 +441,7 @@ print(
     f"There are a total of {total_reads} potential read groups after filtering, of these {on_target_pcnt} % were on target for R1 and R2. This means {recombinant_pcnt} % are recombinant read groups.")
 print("#" * 46)
 print('\n')
+]
 if (on_target_pcnt < 25):
     warnings.warn(f"Not many hits. Check if guides and reads were trimmed " + \
                   f"appropriately. \nread_1 comp: \n{r1_frst_ltrs} \n" + \
@@ -467,7 +466,6 @@ r2_hits_df = r2_reduced_df[r2_reduced_df['hit'] == True]
 r2_recombinant_df = r2_reduced_df[r2_reduced_df['hit'] == False]
 
 """# 5. Export 'hits.\' and 'recombinants.\' per fastq.
-
 """
 
 # Now its just back to the fastqs from here ... ouch. Start stacking the hits!
