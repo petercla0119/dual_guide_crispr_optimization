@@ -1,0 +1,546 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="045592f2-5b82-46ac-9332-08e94c3ecb95" name="Changes" comment="update unversioned files in main branch">
+      <change beforePath="$PROJECT_DIR$/parser_files/dual_guide_parser_v10-2.py" beforeDir="false" afterPath="$PROJECT_DIR$/parser_files/dual_guide_parser_v10-2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/parser_files/hamming_distance.py" beforeDir="false" afterPath="$PROJECT_DIR$/parser_files/hamming_distance.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+        <option value="Jupyter Notebook" />
+      </list>
+    </option>
+  </component>
+  <component name="FlaskConsoleOptions" custom-start-script="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))">
+    <envs>
+      <env key="FLASK_APP" value="app" />
+    </envs>
+    <option name="myCustomStartScript" value="import sys&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;from flask.cli import ScriptInfo&#10;locals().update(ScriptInfo(create_app=None).load_app().make_shell_context())&#10;print(&quot;Python %s on %s\nApp: %s [%s]\nInstance: %s&quot; % (sys.version, sys.platform, app.import_name, app.env, app.instance_path))" />
+    <option name="myEnvs">
+      <map>
+        <entry key="FLASK_APP" value="app" />
+      </map>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
+    <option name="UPDATE_TYPE" value="REBASE" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;petercla0119&quot;
+  }
+}</component>
+  <component name="GitRewordedCommitMessages">
+    <option name="commitMessagesMapping">
+      <RewordedCommitMessageMapping>
+        <option name="originalMessage" value="made output dir into child dir of current path" />
+        <option name="rewordedMessage" value="Revert 19_20 parser script cherry-pick &quot;made output dir into child dir of current path&quot;&#10;&#10;This reverts commit 76008748d17730da210b7ad123b073b339cfb2a7.&#10;&#10;&#10;made output dir into child dir of current path" />
+      </RewordedCommitMessageMapping>
+    </option>
+    <option name="currentCommit" value="1" />
+    <option name="onto" value="c5a4273bcb443f8318df2114367fa9a571461183" />
+  </component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/petercla0119/dual_guide_crispr_optimization.git&quot;,
+    &quot;accountId&quot;: &quot;7bb69c48-d095-4e32-95fe-b8589be1bb8a&quot;
+  }
+}</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$USER_HOME$/Downloads/liulab-mageck-c491c3874dca/mageck/mageckCount.py" root0="FORCE_HIGHLIGHTING" />
+  </component>
+  <component name="ProblemsViewState">
+    <hideBySeverity>
+      <option value="300" />
+    </hideBySeverity>
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="2kHyUnYbcHUAocen2G1FEGa1592" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.19_20_var_bp_dual_guide_parser_tool.executor&quot;: &quot;Run&quot;,
+    &quot;Python.hamming_distance.executor&quot;: &quot;Run&quot;,
+    &quot;Python.investigate_duplicate_guides.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;full.screen.before.presentation.mode&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;hamming__distance&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/Claire/Downloads/raw_sequencing&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;python.debugger.dataview.coloredbydefault&quot;: &quot;false&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;two.files.diff.last.used.file&quot;: &quot;/Users/Claire/PycharmProjects/dual_guide_crispr_optimization/parser_files/19_20_var_bp_dual_guide_parser_tool.py&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;Python&quot;,
+      &quot;PLAIN_TEXT&quot;
+    ]
+  }
+}</component>
+  <component name="PyConsoleOptionsProvider">
+    <option name="myPythonConsoleState">
+      <console-settings module-name="dual_guide_crispr_optimization" is-module-sdk="true">
+        <option name="myUseModuleSdk" value="true" />
+        <option name="myModuleName" value="dual_guide_crispr_optimization" />
+      </console-settings>
+    </option>
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$USER_HOME$/Downloads/raw_sequencing" />
+      <recent name="$PROJECT_DIR$" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="hamming_distance" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="spyder-env" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/parser_files" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/parser_files/hamming_distance.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.hamming_distance" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-1d06a55b98c1-0b3e54e931b4-JavaScript-PY-241.18034.82" />
+        <option value="bundled-python-sdk-975db3bf15a3-2767605e8bc2-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.18034.82" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="045592f2-5b82-46ac-9332-08e94c3ecb95" name="Changes" comment="make sequences in guides_df all caps" />
+      <created>1722954816615</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1722954816615</updated>
+      <workItem from="1722954818532" duration="1489000" />
+      <workItem from="1722956344252" duration="9148000" />
+      <workItem from="1722965536858" duration="306000" />
+      <workItem from="1722965851348" duration="89000" />
+      <workItem from="1722966304054" duration="641000" />
+      <workItem from="1722967718309" duration="20450000" />
+      <workItem from="1723049248249" duration="41944000" />
+      <workItem from="1723225631690" duration="7000" />
+      <workItem from="1723230633827" duration="50985000" />
+      <workItem from="1723493800098" duration="33660000" />
+      <workItem from="1723582323193" duration="11462000" />
+      <workItem from="1723600997127" duration="456000" />
+      <workItem from="1723643149894" duration="913000" />
+      <workItem from="1723644074177" duration="160000" />
+      <workItem from="1723644261412" duration="3293000" />
+    </task>
+    <task id="LOCAL-00001" summary="Add dual-guide workflow graphic in md file">
+      <option name="closed" value="true" />
+      <created>1723132849787</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1723132849787</updated>
+    </task>
+    <task id="LOCAL-00002" summary="alter line spacing">
+      <option name="closed" value="true" />
+      <created>1723133230959</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1723133230959</updated>
+    </task>
+    <task id="LOCAL-00003" summary="updated spacing on parser v10">
+      <option name="closed" value="true" />
+      <created>1723231918936</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1723231918936</updated>
+    </task>
+    <task id="LOCAL-00004" summary="create jupyter notebook to calculate hamming distance to avoid ugly tables">
+      <option name="closed" value="true" />
+      <created>1723231965893</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1723231965893</updated>
+    </task>
+    <task id="LOCAL-00005" summary="examine hamming distance between library and reads">
+      <option name="closed" value="true" />
+      <created>1723232018700</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1723232018700</updated>
+    </task>
+    <task id="LOCAL-00006" summary="examine duplicate guides in library">
+      <option name="closed" value="true" />
+      <created>1723232077156</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1723232077156</updated>
+    </task>
+    <task id="LOCAL-00007" summary="examine duplicate guides in library">
+      <option name="closed" value="true" />
+      <created>1723234713080</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1723234713080</updated>
+    </task>
+    <task id="LOCAL-00008" summary="examine duplicate guides in library">
+      <option name="closed" value="true" />
+      <created>1723234774267</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1723234774267</updated>
+    </task>
+    <task id="LOCAL-00009" summary="update dual-guide workflow schematic">
+      <option name="closed" value="true" />
+      <created>1723235041506</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1723235041506</updated>
+    </task>
+    <task id="LOCAL-00010" summary="update dual-guide workflow schematic">
+      <option name="closed" value="true" />
+      <created>1723235496250</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1723235496250</updated>
+    </task>
+    <task id="LOCAL-00011" summary="add dual-guide workflow schematic">
+      <option name="closed" value="true" />
+      <created>1723235784353</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1723235784353</updated>
+    </task>
+    <task id="LOCAL-00012" summary="add venn diagram showing duplicates in position 1 and position 2">
+      <option name="closed" value="true" />
+      <created>1723479684656</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1723479684656</updated>
+    </task>
+    <task id="LOCAL-00013" summary="resolved set copy and integer warning">
+      <option name="closed" value="true" />
+      <created>1723486523886</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1723486523886</updated>
+    </task>
+    <task id="LOCAL-00014" summary="resolved r1_recombinant_df setcopywarning and append attribute error">
+      <option name="closed" value="true" />
+      <created>1723486978090</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1723486978090</updated>
+    </task>
+    <task id="LOCAL-00015" summary="explicitly defined directories for output_files">
+      <option name="closed" value="true" />
+      <created>1723488116380</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1723488116380</updated>
+    </task>
+    <task id="LOCAL-00016" summary="streamlined hits and recombinants output dirs">
+      <option name="closed" value="true" />
+      <created>1723489398758</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1723489398758</updated>
+    </task>
+    <task id="LOCAL-00017" summary="made output dir into child dir of current path">
+      <option name="closed" value="true" />
+      <created>1723490207655</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1723490207655</updated>
+    </task>
+    <task id="LOCAL-00018" summary="presentable form of investigate_duplicate_guides.py">
+      <option name="closed" value="true" />
+      <created>1723494664389</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1723494664389</updated>
+    </task>
+    <task id="LOCAL-00019" summary="updated 19_20_var_bp_dual_guide_parser_tool.py in duplicate_guides branch">
+      <option name="closed" value="true" />
+      <created>1723495568465</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1723495568465</updated>
+    </task>
+    <task id="LOCAL-00020" summary="updated 19_20_var_bp_dual_guide_parser_tool.py in counts branch">
+      <option name="closed" value="true" />
+      <created>1723495614857</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1723495614857</updated>
+    </task>
+    <task id="LOCAL-00021" summary="add hamming_distance.py and hamming_distance.ipynb">
+      <option name="closed" value="true" />
+      <created>1723496094282</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1723496094282</updated>
+    </task>
+    <task id="LOCAL-00022" summary="update 19_20_var_bp_dual_guide_parser_tool.py in hamming_distance branch">
+      <option name="closed" value="true" />
+      <created>1723496129785</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1723496129785</updated>
+    </task>
+    <task id="LOCAL-00023" summary="added relevant comments to dual_guide from 19_20_var_bp_dual_guide_parser_tool.py">
+      <option name="closed" value="true" />
+      <created>1723499024823</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1723499024823</updated>
+    </task>
+    <task id="LOCAL-00024" summary="changed calculate hamming distance function, attempted to partially vectorize to avoid looping">
+      <option name="closed" value="true" />
+      <created>1723502277063</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1723502277063</updated>
+    </task>
+    <task id="LOCAL-00025" summary="updated dual-guide_workflow.md to include the step to merge the parsed counts files">
+      <option name="closed" value="true" />
+      <created>1723515186725</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1723515186725</updated>
+    </task>
+    <task id="LOCAL-00026" summary="minor formatting edits to 19_20_var_bp_dual_guide_parser_tool.py">
+      <option name="closed" value="true" />
+      <created>1723515213201</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1723515213201</updated>
+    </task>
+    <task id="LOCAL-00027" summary="updated dual-guide_workflow.md to include rough estimate of cell numbers">
+      <option name="closed" value="true" />
+      <created>1723581149953</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1723581149953</updated>
+    </task>
+    <task id="LOCAL-00028" summary="attempt to run in IDE">
+      <option name="closed" value="true" />
+      <created>1723591922339</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1723591922339</updated>
+    </task>
+    <task id="LOCAL-00029" summary="update unversioned files in main branch">
+      <option name="closed" value="true" />
+      <created>1723591985837</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1723591985837</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="counts" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="origin/duplicate_guides" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="origin/main" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="main" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="hamming_distance" />
+                </option>
+              </RecentGroup>
+              <RecentGroup>
+                <option name="FILTER_VALUES">
+                  <option value="duplicate_guides" />
+                </option>
+              </RecentGroup>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="hamming_distance" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT_PROFILE" value="Default" />
+    <option name="CHECK_NEW_TODO" value="false" />
+    <MESSAGE value="examine hamming distance between library and reads" />
+    <MESSAGE value="update dual-guide workflow schematic&#10;update dual-guide workflow schematic" />
+    <MESSAGE value="update dual-guide workflow schematic&#10;update dual-guide workflow schematic" />
+    <MESSAGE value="fixup! update dual-guide workflow schematic update dual-guide workflow schematic" />
+    <MESSAGE value="update dual-guide workflow schematic" />
+    <MESSAGE value="add dual-guide workflow schematic" />
+    <MESSAGE value="add venn diagram showing duplicates in position 1 and position 2" />
+    <MESSAGE value="resolved set copy and integer warning" />
+    <MESSAGE value="resolved r1_recombinant_df setcopywarning and append attribute error" />
+    <MESSAGE value="explicitly defined directories for output_files" />
+    <MESSAGE value="streamlined hits and recombinants output dirs" />
+    <MESSAGE value="made output dir into child dir of current path cherry-pick to hamming_distance" />
+    <MESSAGE value="made output dir into child dir of current path cherry-pick to hamming_distance" />
+    <MESSAGE value="presentable form of investigate_duplicate_guides.py" />
+    <MESSAGE value="updated 19_20_var_bp_dual_guide_parser_tool.py in duplicate_guides branch" />
+    <MESSAGE value="updated 19_20_var_bp_dual_guide_parser_tool.py in counts branch" />
+    <MESSAGE value="add hamming_distance.py and hamming_distance.ipynb" />
+    <MESSAGE value="update 19_20_var_bp_dual_guide_parser_tool.py in hamming_distance branch" />
+    <MESSAGE value="added relevant comments to dual_guide from 19_20_var_bp_dual_guide_parser_tool.py" />
+    <MESSAGE value="changed calculate hamming distance function, attempted to partially vectorize to avoid looping" />
+    <MESSAGE value="updated dual-guide_workflow.md to include the step to merge the parsed counts files" />
+    <MESSAGE value="minor formatting edits to 19_20_var_bp_dual_guide_parser_tool.py" />
+    <MESSAGE value="updated dual-guide_workflow.md to include rough estimate of cell numbers" />
+    <MESSAGE value="attempt to run in IDE" />
+    <MESSAGE value="update unversioned files in main branch" />
+    <option name="LAST_COMMIT_MESSAGE" value="update unversioned files in main branch" />
+    <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$USER_HOME$/Downloads/liulab-mageck-c491c3874dca/mageck/mageckCountIO.py</url>
+          <line>3</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" log-message="true" suspend="NONE" type="python-line">
+          <url>file://$PROJECT_DIR$/parser_files/hamming_distance.py</url>
+          <line>380</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/dual_guide_crispr_optimization$dual_guide_parser_v10_2.coverage" NAME="dual_guide_parser_v10-2 Coverage Results" MODIFIED="1722610244428" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/parser_files" />
+    <SUITE FILE_PATH="coverage/dual_guide_crispr_optimization$19_20_var_bp_dual_guide_parser_tool.coverage" NAME="19_20_var_bp_dual_guide_parser_tool Coverage Results" MODIFIED="1723489272230" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/parser_files" />
+    <SUITE FILE_PATH="coverage/dual_guide_crispr_optimization$hamming_dist.coverage" NAME="hamming_dist Coverage Results" MODIFIED="1722881160747" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/parser_files" />
+    <SUITE FILE_PATH="coverage/dual_guide_crispr_optimization$.coverage" NAME=" Coverage Results" MODIFIED="1722890216205" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/parser_files" />
+    <SUITE FILE_PATH="coverage/dual_guide_crispr_optimization$testscripts.coverage" NAME="testscripts Coverage Results" MODIFIED="1722888789382" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/parser_files" />
+    <SUITE FILE_PATH="coverage/dual_guide_crispr_optimization$investigate_duplicate_guides.coverage" NAME="investigate_duplicate_guides Coverage Results" MODIFIED="1723472397252" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/parser_files" />
+    <SUITE FILE_PATH="coverage/dual_guide_crispr_optimization$hamming_distance.coverage" NAME="hamming_distance Coverage Results" MODIFIED="1723045929213" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/parser_files" />
+  </component>
+</project>
