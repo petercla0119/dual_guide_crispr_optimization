@@ -578,24 +578,28 @@ r2_true_recombinant_fastq_df = r2_true_recombinant_stacked_df
 
 # Export the new fastq.
 
-r1_hits_out_file = "hits." + r1_file
-r2_hits_out_file = "hits." + r2_file
+# Define the child directory relative to the current script's location
+child_directory = os.path.join(os.path.dirname(__file__), 'output')
 
+# Ensure the child directory exists
+if not os.path.exists(child_directory):
+    os.makedirs(child_directory)
+
+# Set the output file paths in the child directory
+r1_hits_out_file = os.path.join(child_directory, "hits." + r1_file)
+r2_hits_out_file = os.path.join(child_directory, "hits." + r2_file)
+r1_true_recombinant_out_file = os.path.join(child_directory, "recombinants." + r1_file)
+r2_true_recombinant_out_file = os.path.join(child_directory, "recombinants." + r2_file)
+r1_failed_recombinant_out_file = os.path.join(child_directory, "fails." + r1_file)
+r2_failed_recombinant_out_file = os.path.join(child_directory, "fails." + r2_file)
+
+# Save the DataFrames to their respective CSV files
 r1_hits_fastq_df.to_csv(r1_hits_out_file, sep='\t', index=False, header=False, compression='gzip')
 r2_hits_fastq_df.to_csv(r2_hits_out_file, sep='\t', index=False, header=False, compression='gzip')
-
-r1_true_recombinant_out_file = "recombinants." + r1_file
-r2_true_recombinant_out_file = "recombinants." + r2_file
-
 r1_true_recombinant_fastq_df.to_csv(r1_true_recombinant_out_file, sep='\t', index=False, header=False, compression='gzip')
 r2_true_recombinant_fastq_df.to_csv(r2_true_recombinant_out_file, sep='\t', index=False, header=False, compression='gzip')
-
-r1_failed_recombinant_out_file = "fails." + r1_file
-r2_failed_recombinant_out_file = "fails." + r2_file
-
 r1_failed_recombinant_fastq_df.to_csv(r1_failed_recombinant_out_file, sep='\t', index=False, header=False, compression='gzip')
 r2_failed_recombinant_fastq_df.to_csv(r2_failed_recombinant_out_file, sep='\t', index=False, header=False, compression='gzip')
-
 """# Add some narrative.
 
 """
