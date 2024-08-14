@@ -441,7 +441,7 @@ print(
     f"There are a total of {total_reads} potential read groups after filtering, of these {on_target_pcnt} % were on target for R1 and R2. This means {recombinant_pcnt} % are recombinant read groups.")
 print("#" * 46)
 print('\n')
-]
+
 if (on_target_pcnt < 25):
     warnings.warn(f"Not many hits. Check if guides and reads were trimmed " + \
                   f"appropriately. \nread_1 comp: \n{r1_frst_ltrs} \n" + \
