@@ -2,9 +2,12 @@
 
 # %% 0. Import/Setup
 import pandas as pd
-pd.set_option('display.max_rows', None)  # Show all rows
+from matplotlib_venn import venn2
+from matplotlib import pyplot as plt
 import numpy as np
-import matplotlib.pyplot as plot
+
+
+pd.set_option('display.max_rows', None)  # Show all rows
 guides_file = "/Users/Claire/Downloads/git_clones/dual_guide_crispr_optimization/parser_files/20200513_library_1_2_unbalanced_dJR051.txt"
 
 guides_df = pd.read_csv(guides_file, sep='\t')
@@ -290,8 +293,7 @@ df_not_in_df2_posit_2 = df_diff_posit_2[df_diff_posit_2['_merge'] == 'left_only'
 # TODO: generate summary tables that show total duplicates in A
 # TODO: for duplicate values in proto a col, that also have dup values in proto b col, add counts to all sequnces
 
-from matplotlib_venn import venn2
-from matplotlib import pyplot as plt
+
 
  #depict venn diagram
 venn2(subsets = ((len(A_dups)-num_dup_A_and_B),(len(B_dups)-num_dup_A_and_B), num_dup_A_and_B),
