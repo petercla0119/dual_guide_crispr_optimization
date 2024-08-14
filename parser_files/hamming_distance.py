@@ -16,8 +16,8 @@ from itertools import islice
 
 # Set  options for testing.
 guides_file = "/Users/Claire/Downloads/git_clones/dual_guide_crispr_optimization/parser_files/20200513_library_1_2_unbalanced_dJR051.txt"
-r1_file = "/Users/Claire/Downloads/JH8105_1_S1_L001_R1_001.fastq"
-r2_file = "/Users/Claire/Downloads/JH8105_1_S1_L001_R2_001.fastq"
+r1_file = "/Users/Claire/Downloads/raw_sequencing/JH8105_1_S1_L001_R1_001.fastq.gz"
+r2_file = "/Users/Claire/Downloads/raw_sequencing/JH8105_1_S1_L001_R2_001.fastq.gz"
 N_rows = 1500 # Speed up testing, this just reads the first 10K sequences.
 check_length = 500 # top and bottom of the array, how far to check for whether composed with G.
 guide_1_offset = -999 # -999 is the sentinel value
@@ -32,8 +32,8 @@ check_reverse = True
 
 guides_df = pd.read_csv(guides_file, sep='\t')
 
-with open(r1_file, mode = 'rt') as r1, \
-     open(r2_file, mode = 'rt') as r2:
+with gzip.open(r1_file, mode = 'rt') as r1, \
+     gzip.open(r2_file, mode = 'rt') as r2:
   r1_it = FastqGeneralIterator(r1)
   r2_it = FastqGeneralIterator(r2)
 
@@ -200,8 +200,6 @@ r2_df.loc[:,'guide_seq'] = [x[read_2_offset:read_2_end] for x in r2_df.seq]
 r1_df.loc[:,'guide_seq'] = [x[read_1_offset:read_1_end] for x in r1_df.seq]
 
 
-
-
 # %% 2. Create function to calculate the Hamming Distance. Sequences must be the same length!
 # TODO: add filter to to tolerate up to 3 nucleotides difference between the guide library
 
@@ -317,7 +315,6 @@ r1_df.loc[:,'guide_seq'] = [x[read_1_offset:read_1_end] for x in r1_df.seq]
 #     return result_df
 '''
 
-
 # Option 4
 # Function Below works, but would ideally be faster
 # TODO: ask MM how to make it faster?
@@ -361,8 +358,6 @@ def compare_sequences_and_generate_df(read_df, guides_df, guide_key):
     # Return the result sorted by Hamming distance
     return merged_df[['guide_seq', guide_key, 'hamming_distance']].sort_values(by='hamming_distance', ascending=True)
 
-
-
 # Sample data
 read_df_sample = r1_df.head(10)
 guides_df_sample = guides_df.head(10)
@@ -403,19 +398,17 @@ plt.legend()
 plt.show()
 
 # %% 4. Print summary tables of Hamming distances
-
-result = result_df_r1.groupby('hamming_distance').size().reset_index(name='n')
-# Display the result
-print(result)
-
 # View values with a Hamming distance between 1-3
 # # Select the 'hamming_distance' column and filter rows between 1 and 3
 # sm_ham_dist_posit_1 = result_df_r1[(result_df_r1['hamming_distance'] <= 3) & (result_df_r1['hamming_distance'] >= 1)]
 # sm_ham_dist_posit_2 = result_df_r2[(result_df_r2['hamming_distance'] <= 3) & (result_df_r2['hamming_distance'] >= 1)]
 
+result_df_r1.groupby('hamming_distance').size().reset_index(name='n')
+
+
 # Filter read_df to keep only rows with hamming_distance < 3 and hamming_distance > 1
-r1_filtered = result_df_r1[(result_df_r1['hamming_distance'] <= 3) & (result_df_r1['hamming_distance'] >= 1)]
-r2_filtered = result_df_r2[(result_df_r2['hamming_distance'] <= 3) & (result_df_r2['hamming_distance'] >= 1)]
+r1_filtered = result_df_r1[(result_df_r1['hamming_distance'] <= 2) & (result_df_r1['hamming_distance'] >= 1)]
+r2_filtered = result_df_r2[(result_df_r2['hamming_distance'] <= 2) & (result_df_r2['hamming_distance'] >= 1)]
 
 # 'r#_filtered' dataframes contain only 1 <= Hamming distance <= 3 for their respective reads.
 # Merge filtered_df with guides_df on the read_key column'
@@ -431,8 +424,9 @@ r1_pct_filtered = round((len(r1_filtered)/len(r1_df))*100, 3)
 r2_pct_filtered = round((len(r2_filtered)/len(r2_df))*100, 3)
 
 # Print summary statements about the Hamming Distances
-print(f'{len(r1_filtered)} gRNAs out of {len(r1_df)} total gRNAs in R2 have a Hamming distance between 1-3 which is {r1_pct_filtered}% of the total guides from R2')
+print(f'{len(r1_filtered)} gRNAs out of {len(r1_df)} total gRNAs in R1 have a Hamming distance between 1-3 which is {r1_pct_filtered}% of the total guides from R1')
 print(f'{len(r2_filtered)} gRNAs out of {len(r2_df)} total gRNAs in R2 have a Hamming distance between 1-3 which is {r2_pct_filtered}% of the total guides from R2')
+
 
 #######################################################################################################################
 # TODO:
