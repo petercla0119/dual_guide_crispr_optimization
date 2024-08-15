@@ -73,82 +73,82 @@ from itertools import islice
 
 # Set  options for testing.
 
-guides_file = "/Users/Claire/Downloads/git_clones/dual_guide_crispr_optimization/parser_files/20200513_library_1_2_unbalanced_dJR051.txt"
-r1_file = "/Users/Claire/Downloads/raw_sequencing/JH8105_1_S1_L001_R1_001.fastq.gz"
-r2_file = "/Users/Claire/Downloads/raw_sequencing/JH8105_1_S1_L001_R2_001.fastq.gz"
-N_rows = 1500 # Speed up testing, this just reads the first 10K sequences.
-check_length = 500 # top and bottom of the array, how far to check for whether composed with G.
-guide_1_offset = -999 # -999 is the sentinel value
-guide_2_offset = -999 # -999 is the sentinel value
-read_1_offset = -999 # -999 is the sentinel value
-read_2_offset = -999 # -999 is the sentinel value
-purity = 0.95
-check_reverse = True
+# guides_file = "/Users/Claire/Downloads/git_clones/dual_guide_crispr_optimization/parser_files/20200513_library_1_2_unbalanced_dJR051.txt"
+# r1_file = "/Users/Claire/Downloads/raw_sequencing/JH8105_1_S1_L001_R1_001.fastq.gz"
+# r2_file = "/Users/Claire/Downloads/raw_sequencing/JH8105_1_S1_L001_R2_001.fastq.gz"
+# N_rows = 1500 # Speed up testing, this just reads the first 10K sequences.
+# check_length = 500 # top and bottom of the array, how far to check for whether composed with G.
+# guide_1_offset = -999 # -999 is the sentinel value
+# guide_2_offset = -999 # -999 is the sentinel value
+# read_1_offset = -999 # -999 is the sentinel value
+# read_2_offset = -999 # -999 is the sentinel value
+# purity = 0.95
+# check_reverse = True
 
 # Set the options for production.
 
-# parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description=textwrap.dedent('''\
+parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description=textwrap.dedent('''\
+
+#Thanks for trying the dual_guide_parser from CARD + iNDI + DTi.
+#To run this code, you will need to specify the guides_file, this is a file similar to the example 20200513_library_1_2_unbalanced_dJR051.csv.
+#You will need to specify a pair of R1 and R2 files, such as UDP0007_S1_R1_001.fastq.gz and UDP0007_S1_R2_001.fastq.gz.
+#You can also specify the number of read groups you are interested for testing the tool, this relates to the option n_groups.
+#This will only read that many readgroups from the R1 and R2 files, allowing you to speed things up a bit.
+#This code must be run from the working directory that contains the R1 and R2 files, but the guides_file can be anywhere, just
+#specify a full path to the guides file like ~/Desktop/20200513_library_1_2_unbalanced_dJR051.csv.
+#This code attempts to automatically equalize guides and reads. In other words,
+#it will attempt to cut out letters that begin a guide as a rule, or a read. You may also specify these settings
+#manually.
+#This is best run on a large RAM / high CPU set up as the files are quite large.
+#Finally, to run this code, you will need several packages, including biopython. To see the required packages listed, run with the -h option.
 #
-# #Thanks for trying the dual_guide_parser from CARD + iNDI + DTi.
-# #To run this code, you will need to specify the guides_file, this is a file similar to the example 20200513_library_1_2_unbalanced_dJR051.csv.
-# #You will need to specify a pair of R1 and R2 files, such as UDP0007_S1_R1_001.fastq.gz and UDP0007_S1_R2_001.fastq.gz.
-# #You can also specify the number of read groups you are interested for testing the tool, this relates to the option n_groups.
-# #This will only read that many readgroups from the R1 and R2 files, allowing you to speed things up a bit.
-# #This code must be run from the working directory that contains the R1 and R2 files, but the guides_file can be anywhere, just
-# #specify a full path to the guides file like ~/Desktop/20200513_library_1_2_unbalanced_dJR051.csv.
-# #This code attempts to automatically equalize guides and reads. In other words,
-# #it will attempt to cut out letters that begin a guide as a rule, or a read. You may also specify these settings
-# #manually.
-# #This is best run on a large RAM / high CPU set up as the files are quite large.
-# #Finally, to run this code, you will need several packages, including biopython. To see the required packages listed, run with the -h option.
-# #
-# #'''))
-# parser.add_argument('--packages', help='Request for packages required to run, and how to install.', action='store_true')
-# parser.add_argument('--guides_file', type=str, default='missing', help='Mandatory input filepath. This is a file similar to the example 20200513_library_1_2_unbalanced_dJR051.csv. This can be a complete filepath')
-# parser.add_argument('--r1_file', type=str, default='missing', help='Mandatory input file name. An R1 file in your working directory.')
-# parser.add_argument('--r2_file', type=str, default='missing', help='Mandatory input file name. An R2 file in your working directory.')
-# parser.add_argument('--N_reads', type=int, default=0, help='Optional number of readgroups to test. An integer.')
-# parser.add_argument('--guide_1_offset', type=int, default = -999, help='# of characters to truncate from the left of the protospacer_A. Read truncation is not automatic, set accordingly. Default = 0.')
-# parser.add_argument('--read_1_offset', type=int, default = -999, help='# of characters to truncate from the left of read_1. Read truncation is not automatic, set accordingly. Default = 0.')
-# parser.add_argument('--guide_2_offset', type=int, default = -999, help='# of characters to truncate from the left of the protospacer_B. A Read truncation is not automatic, set accordingly. Default = 0.')
-# parser.add_argument('--read_2_offset', type=int, default = -999, help='# of characters to truncate from the left of read_2. Read truncation is not automatic, set accordingly. Default = 0.')
-# parser.add_argument('--purity', type=float, default = 0.95, help='minimum percentage of reads with the same beginning to be cut.')
-# parser.add_argument('--check_length', type=int, default=500, help='# of rows on the bottom and top of the array to check for concordance of starting letter.')
-# parser.add_argument('--check_reverse', action='store_true', help='# match reads against both guide1+reverse_comp(guide2) and guide2_reverse_comp(guide1)')
-#
-# args = parser.parse_args()
-#
-# if(args.packages):
-#   print("Must have numpy and pandas available. \n Additionally, must install biopython.")
-#   print("To install biopython, run pip install biopython, or, if using conda,")
-#   print("conda install -c conda-forge biopython")
-#   quit()
-#
-# print("#"*46)
-# print("")
-# print("Here is some basic info on the command you are about to run.")
-# print("Python version info...")
-# print(sys.version)
-# print("CLI argument info...")
-# print("The guides file you are using is", args.guides_file, ".")
-# print("The r1 file you are using is", args.r1_file, ".")
-# print("The r2 file you are using is", args.r2_file, ".")
-# print("How many read groups are only for a quick test and not the full set?", args.N_reads, ".")
-# print("")
-# print("#"*46)
-#
-# guides_file = args.guides_file
-# r1_file = args.r1_file
-# r2_file = args.r2_file
-# N_reads = args.N_reads
-# N_rows = args.N_reads
-# guide_1_offset = args.guide_1_offset
-# guide_2_offset = args.guide_2_offset
-# read_1_offset = args.read_1_offset
-# read_2_offset = args.read_2_offset
-# check_length = args.check_length
-# purity = args.purity
-# check_reverse = args.check_reverse
+#'''))
+parser.add_argument('--packages', help='Request for packages required to run, and how to install.', action='store_true')
+parser.add_argument('--guides_file', type=str, default='missing', help='Mandatory input filepath. This is a file similar to the example 20200513_library_1_2_unbalanced_dJR051.csv. This can be a complete filepath')
+parser.add_argument('--r1_file', type=str, default='missing', help='Mandatory input file name. An R1 file in your working directory.')
+parser.add_argument('--r2_file', type=str, default='missing', help='Mandatory input file name. An R2 file in your working directory.')
+parser.add_argument('--N_reads', type=int, default=0, help='Optional number of readgroups to test. An integer.')
+parser.add_argument('--guide_1_offset', type=int, default = -999, help='# of characters to truncate from the left of the protospacer_A. Read truncation is not automatic, set accordingly. Default = 0.')
+parser.add_argument('--read_1_offset', type=int, default = -999, help='# of characters to truncate from the left of read_1. Read truncation is not automatic, set accordingly. Default = 0.')
+parser.add_argument('--guide_2_offset', type=int, default = -999, help='# of characters to truncate from the left of the protospacer_B. A Read truncation is not automatic, set accordingly. Default = 0.')
+parser.add_argument('--read_2_offset', type=int, default = -999, help='# of characters to truncate from the left of read_2. Read truncation is not automatic, set accordingly. Default = 0.')
+parser.add_argument('--purity', type=float, default = 0.95, help='minimum percentage of reads with the same beginning to be cut.')
+parser.add_argument('--check_length', type=int, default=500, help='# of rows on the bottom and top of the array to check for concordance of starting letter.')
+parser.add_argument('--check_reverse', action='store_true', help='# match reads against both guide1+reverse_comp(guide2) and guide2_reverse_comp(guide1)')
+
+args = parser.parse_args()
+
+if(args.packages):
+  print("Must have numpy and pandas available. \n Additionally, must install biopython.")
+  print("To install biopython, run pip install biopython, or, if using conda,")
+  print("conda install -c conda-forge biopython")
+  quit()
+
+print("#"*46)
+print("")
+print("Here is some basic info on the command you are about to run.")
+print("Python version info...")
+print(sys.version)
+print("CLI argument info...")
+print("The guides file you are using is", args.guides_file, ".")
+print("The r1 file you are using is", args.r1_file, ".")
+print("The r2 file you are using is", args.r2_file, ".")
+print("How many read groups are only for a quick test and not the full set?", args.N_reads, ".")
+print("")
+print("#"*46)
+
+guides_file = args.guides_file
+r1_file = args.r1_file
+r2_file = args.r2_file
+N_reads = args.N_reads
+N_rows = args.N_reads
+guide_1_offset = args.guide_1_offset
+guide_2_offset = args.guide_2_offset
+read_1_offset = args.read_1_offset
+read_2_offset = args.read_2_offset
+check_length = args.check_length
+purity = args.purity
+check_reverse = args.check_reverse
 
 # Commented out IPython magic to ensure Python compatibility.
 # %tb
