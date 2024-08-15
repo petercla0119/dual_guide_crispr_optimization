@@ -22,10 +22,10 @@ Original file is located at
 3.   Detect whether any guide or read truncation is necessary.
 4.   Identify matching read groups across R1 and R2.
 5.   Reduce the datasets to the read groups that match in R1 and R2.
-6.   Split into 'hits.\*'  and 'recombinants.\*'.
-'hits.\*' denotes read group matches and the protospacers match.
-'recombinants.\*' denotes read group matches but one or more protospacers does not.
-7.   Export 'hits.\*' and 'recombinants.\*' per fastq.
+6.   Split into 'hits.\'  and 'recombinants.\'.
+'hits.\' denotes read group matches and the protospacers match.
+'recombinants.\' denotes read group matches but one or more protospacers does not.
+7.   Export 'hits.\' and 'recombinants.\' per fastq.
 
 ### Notes on data for testing:
 - **20200513_library_1_2_unbalanced_dJR051.csv** = All elements of the dual sgRNA library. Sequence from protospacer_A and protospacer_B columns must be present in the same row to be considered a match.
@@ -41,24 +41,25 @@ Original file is located at
 
 # %% Set up notebook
 
-# import os
+import os
+
+import os
 # from google.colab import drive
-# import numpy as np
+import numpy as np
 import pandas as pd
-# import math
-# import sys
+import math
+import sys
 # import joblib
-# import subprocess
-# import argparse
+import subprocess
+import argparse
 import gzip
-# import textwrap
+import textwrap
 import warnings
 
 #!pip install --upgrade tables
 #! pip install biopython
 
 # import tables
-
 # import requests
 # from Bio import SeqIO
 from Bio.Seq import reverse_complement
@@ -73,7 +74,7 @@ from itertools import islice
 # Set  options for testing.
 
 guides_file = "/Users/Claire/Downloads/git_clones/dual_guide_crispr_optimization/parser_files/20200513_library_1_2_unbalanced_dJR051.txt"
-r1_file = "//Users/Claire/Downloads/raw_sequencing/JH8105_1_S1_L001_R1_001.fastq.gz"
+r1_file = "/Users/Claire/Downloads/raw_sequencing/JH8105_1_S1_L001_R1_001.fastq.gz"
 r2_file = "/Users/Claire/Downloads/raw_sequencing/JH8105_1_S1_L001_R2_001.fastq.gz"
 N_rows = 1500 # Speed up testing, this just reads the first 10K sequences.
 check_length = 500 # top and bottom of the array, how far to check for whether composed with G.
@@ -154,8 +155,24 @@ check_reverse = True
 # %% 1. Import data
 """# 1. Import data, this includes concensus guides and R1 + R2 fastqs."""
 
-# Import data to pandas.
-# guides_df = pd.read_csv(guides_file, engine='c')
+# Function to read the guide library file in .csv and .txt format
+# TODO: Ensure function runs
+# def read_guides_file(guides_file):
+#     file_extension = os.path.splitext(guides_file)[1].lower()
+#
+#     if file_extension == '.txt':
+#         # Read as a tab-delimited file
+#         guides_df = pd.read_csv(guides_file, sep = '\t', engine = 'c')
+#     elif file_extension == '.csv':
+#         # Read as a comma-separated file
+#         guides_df = pd.read_csv(guides_file, engine = 'c')
+#     else:
+#         raise ValueError("Unsupported file type: {}".format(file_extension))
+#
+#     return guides_df
+#
+# guides_df = read_guides_file(guides_file)
+
 # Modify based on guide file format - Guide file received was in txt format
 guides_df = pd.read_csv(guides_file, sep='\t')
 
@@ -378,7 +395,7 @@ r1_pcnt_consensus = round((consensus_N_read_groups/r1_N_attempted_read_groups)*1
 r2_pcnt_consensus = round((consensus_N_read_groups/r2_N_attempted_read_groups)*100, 2)
 
 print("#"*46)
-print(f"R1 had {r1_N_attempted_read_groups} potential read groups, of these {r1_pcnt_consensus} % were among the concensus read groups. \n "
+print(f"R1 had {r1_N_attempted_read_groups} potential read groups, of these {r1_pcnt_consensus} % were among the concensus read groups. \n"
       f"R2 had {r2_N_attempted_read_groups} potential read groups, of these {r2_pcnt_consensus} % were among the concensus read groups. \n"
       f"In total there are {consensus_N_read_groups} read groups that are matching across R1 and R2 for this experiment.")
 print(f"{sum(all_removed)} potential read groups were removed for poor quality reads")
@@ -495,11 +512,19 @@ r2_hits_fastq_df = r2_hits_stacked_df
 uppercase_r1_keys = [x.upper() for x in guides_df['r1_key']]
 uppercase_r2_keys = [x.upper() for x in guides_df['r2_key']]
 
-r1_recombinant_df.loc[:, 'uppercase_guide_seq'] = [x.upper() for x in r1_recombinant_df['guide_seq']]
-r2_recombinant_df.loc[:, 'uppercase_guide_seq'] = [x.upper() for x in r2_recombinant_df['guide_seq']]
+r1_recombinant_df = r1_recombinant_df.copy()  # Ensure we're working with a copy
+r1_recombinant_df['uppercase_guide_seq'] = r1_recombinant_df['guide_seq'].str.upper()
+r2_recombinant_df = r2_recombinant_df.copy()  # Ensure we're working with a copy
+r2_recombinant_df['uppercase_guide_seq'] = r2_recombinant_df['guide_seq'].str.upper()
+# r1_recombinant_df.loc[:, 'uppercase_guide_seq'] = [x.upper() for x in r1_recombinant_df.loc[:, 'guide_seq']]
+# r2_recombinant_df.loc[:, 'uppercase_guide_seq'] = [x.upper() for x in r2_recombinant_df.loc[:, 'guide_seq']]
 
-r1_recombinant_df.loc[:, 'in_guide_library'] = r1_recombinant_df.loc[:, 'uppercase_guide_seq'].isin(uppercase_r1_keys)
-r2_recombinant_df.loc[:, 'in_guide_library'] = r2_recombinant_df.loc[:, 'uppercase_guide_seq'].isin(uppercase_r2_keys)
+r1_recombinant_df = r1_recombinant_df.copy()  # Ensure it's a copy, not a view
+r1_recombinant_df.loc[:, 'in_guide_library'] = r1_recombinant_df['uppercase_guide_seq'].isin(uppercase_r1_keys)
+r2_recombinant_df = r1_recombinant_df.copy()  # Ensure it's a copy, not a view
+r2_recombinant_df.loc[:, 'in_guide_library'] = r2_recombinant_df['uppercase_guide_seq'].isin(uppercase_r2_keys)
+# r1_recombinant_df.loc[:, 'in_guide_library'] = r1_recombinant_df.loc[:, 'uppercase_guide_seq'].isin(uppercase_r1_keys)
+# r2_recombinant_df.loc[:, 'in_guide_library'] = r2_recombinant_df.loc[:, 'uppercase_guide_seq'].isin(uppercase_r2_keys)
 
 # TODO: consider adding function for user input to select permissiveness of output files
     # TODO: matches r1 sequence
@@ -527,13 +552,17 @@ print(f'The sum of R1 and R2 failed recombinants: {len(r1_failed_recombinants) +
 print(f'Number of failed read groups: {N_big_fails}')
 
 # Creates a new column to flag if read groups are in 'recombinant_failed_readgroups'. If yes, then 'big_fail' == True, otherwise False
+r1_recombinant_df = r1_recombinant_df.copy()  # Ensure it's a copy, not a view
 r1_recombinant_df.loc[:, 'big_fail'] = r1_recombinant_df.loc[:, 'read_group'].isin(recombinant_failed_readgroups)
+r2_recombinant_df = r2_recombinant_df.copy()  # Ensure it's a copy, not a view
 r2_recombinant_df.loc[:, 'big_fail'] = r2_recombinant_df.loc[:, 'read_group'].isin(recombinant_failed_readgroups)
+# r1_recombinant_df.loc[:, 'big_fail'] = r1_recombinant_df.loc[:, 'read_group'].isin(recombinant_failed_readgroups)
+# r2_recombinant_df.loc[:, 'big_fail'] = r2_recombinant_df.loc[:, 'read_group'].isin(recombinant_failed_readgroups)
 # FIXME: weird... there are 58 rows in r1_recombinant_df that are in the guide library AND a big fail... how?
 
 # Read groups/guide seq are in 'recombinant_failed_readgroups'... TODO: Consider sequencing base error?
-r1_failed_recombinants_df = r1_recombinant_df[r1_recombinant_df['big_fail'] == True]
-r2_failed_recombinants_df = r2_recombinant_df[r2_recombinant_df['big_fail'] == True]
+r1_failed_recombinants_df = r1_recombinant_df[r1_recombinant_df.loc[:, 'big_fail'] == True]
+r2_failed_recombinants_df = r2_recombinant_df[r2_recombinant_df.loc[:, 'big_fail'] == True]
 
 # print(f'{len(r1_recombinant_df[r1_recombinant_df['in_guide_library']==True])}')
 # print(f'{len(r2_recombinant_df[r2_recombinant_df['in_guide_library']==True])}')
@@ -542,9 +571,9 @@ r2_failed_recombinants_df = r2_recombinant_df[r2_recombinant_df['big_fail'] == T
 # print(f'{len(r2_recombinant_df[r2_recombinant_df['in_guide_library']==False])}')
 
 # Read groups/guide seq are
-r1_true_recombinants_df = r1_recombinant_df[r1_recombinant_df['big_fail'] == False]
-r2_true_recombinants_df = r2_recombinant_df[r2_recombinant_df['big_fail'] == False]
-r1_recombinant_df[r1_recombinant_df['in_guide_library'] == True]
+r1_true_recombinants_df = r1_recombinant_df[r1_recombinant_df.loc[:, 'big_fail'] == False]
+r2_true_recombinants_df = r2_recombinant_df[r2_recombinant_df.loc[:, 'big_fail'] == False]
+# r1_recombinant_df[r1_recombinant_df['in_guide_library'] == True]
 
 # print(len(r1_true_recombinants_df))
 # print(len(r2_true_recombinants_df))
@@ -561,7 +590,7 @@ print("#"*46)
 
 r1_failed_recombinants['read_group']
 
-len(r1_failed_recombinants['read_group'])
+# len(r1_failed_recombinants['read_group'])
 
 # Start stacking the recombinants!
 r1_failed_recombinant_stacked_df = r1_failed_recombinants_df[['title', 'seq', 'plus', 'qual']].stack()
@@ -577,21 +606,30 @@ r1_true_recombinant_fastq_df = r1_true_recombinant_stacked_df
 r2_true_recombinant_fastq_df = r2_true_recombinant_stacked_df
 
 # Export the new fastq.
+# Define the child directory relative to the current script's location. Use lines for shell script
+# script_dir = os.path.dirname(os.path.abspath(__file__))  # Absolute path to the script
+# child_directory = os.path.join(script_dir, 'output')
 
-# Define the child directory relative to the current script's location
-child_directory = os.path.join(os.path.dirname(__file__), 'output')
+# Define the child directory relative to the current working directory
+child_directory = os.path.join(os.getcwd().strip(), 'output')
 
 # Ensure the child directory exists
 if not os.path.exists(child_directory):
     os.makedirs(child_directory)
 
-# Set the output file paths in the child directory
-r1_hits_out_file = os.path.join(child_directory, "hits." + r1_file)
-r2_hits_out_file = os.path.join(child_directory, "hits." + r2_file)
-r1_true_recombinant_out_file = os.path.join(child_directory, "recombinants." + r1_file)
-r2_true_recombinant_out_file = os.path.join(child_directory, "recombinants." + r2_file)
-r1_failed_recombinant_out_file = os.path.join(child_directory, "fails." + r1_file)
-r2_failed_recombinant_out_file = os.path.join(child_directory, "fails." + r2_file)
+# Extract just the filename from r1_file and r2_file
+r1_filename = os.path.basename(r1_file)
+r2_filename = os.path.basename(r2_file)
+
+print(f"Saving files to directory: {child_directory}")
+
+# Now set the output file paths in the subdirectory 'hits'
+r1_hits_out_file = os.path.join(child_directory, "hits." + r1_filename)
+r2_hits_out_file = os.path.join(child_directory, "hits." + r2_filename)
+r1_true_recombinant_out_file = os.path.join(child_directory, "recombinants." + r1_filename)
+r2_true_recombinant_out_file = os.path.join(child_directory, "recombinants." + r2_filename)
+r1_failed_recombinant_out_file = os.path.join(child_directory, "fails." + r1_filename)
+r2_failed_recombinant_out_file = os.path.join(child_directory, "fails." + r2_filename)
 
 # Save the DataFrames to their respective CSV files
 r1_hits_fastq_df.to_csv(r1_hits_out_file, sep='\t', index=False, header=False, compression='gzip')
@@ -600,6 +638,32 @@ r1_true_recombinant_fastq_df.to_csv(r1_true_recombinant_out_file, sep='\t', inde
 r2_true_recombinant_fastq_df.to_csv(r2_true_recombinant_out_file, sep='\t', index=False, header=False, compression='gzip')
 r1_failed_recombinant_fastq_df.to_csv(r1_failed_recombinant_out_file, sep='\t', index=False, header=False, compression='gzip')
 r2_failed_recombinant_fastq_df.to_csv(r2_failed_recombinant_out_file, sep='\t', index=False, header=False, compression='gzip')
+
+
+
+# # Define the child directory relative to the current script's location
+# child_directory = os.path.join(os.path.dirname(__name__), 'output')
+#
+# # Ensure the child directory exists
+# if not os.path.exists(child_directory):
+#     os.makedirs(child_directory)
+#
+# # Set the output file paths in the child directory
+# r1_hits_out_file = os.path.join(child_directory, "hits." + r1_file)
+# r2_hits_out_file = os.path.join(child_directory, "hits." + r2_file)
+# r1_true_recombinant_out_file = os.path.join(child_directory, "recombinants." + r1_file)
+# r2_true_recombinant_out_file = os.path.join(child_directory, "recombinants." + r2_file)
+# r1_failed_recombinant_out_file = os.path.join(child_directory, "fails." + r1_file)
+# r2_failed_recombinant_out_file = os.path.join(child_directory, "fails." + r2_file)
+#
+# # Save the DataFrames to their respective CSV files
+# r1_hits_fastq_df.to_csv(r1_hits_out_file, sep='\t', index=False, header=False, compression='gzip')
+# r2_hits_fastq_df.to_csv(r2_hits_out_file, sep='\t', index=False, header=False, compression='gzip')
+# r1_true_recombinant_fastq_df.to_csv(r1_true_recombinant_out_file, sep='\t', index=False, header=False, compression='gzip')
+# r2_true_recombinant_fastq_df.to_csv(r2_true_recombinant_out_file, sep='\t', index=False, header=False, compression='gzip')
+# r1_failed_recombinant_fastq_df.to_csv(r1_failed_recombinant_out_file, sep='\t', index=False, header=False, compression='gzip')
+# r2_failed_recombinant_fastq_df.to_csv(r2_failed_recombinant_out_file, sep='\t', index=False, header=False, compression='gzip')
+
 """# Add some narrative.
 
 """
@@ -611,6 +675,7 @@ print("Reads from matched read groups on whose guides were on were off target an
 print("Reads from recombinant read groups on whose guides were not mathced to a known guide sequence for either R1 and R2 are found in the files prefixed fails.*.")
 print("Good luck and feel free to generally ignore any outputs below here!")
 print("#"*46)
+
 
 """# Just for executable testing below."""
 
