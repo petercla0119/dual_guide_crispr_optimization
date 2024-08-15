@@ -156,25 +156,21 @@ check_reverse = True
 """# 1. Import data, this includes concensus guides and R1 + R2 fastqs."""
 
 # Function to read the guide library file in .csv and .txt format
-# TODO: Ensure function runs
-# def read_guides_file(guides_file):
-#     file_extension = os.path.splitext(guides_file)[1].lower()
-#
-#     if file_extension == '.txt':
-#         # Read as a tab-delimited file
-#         guides_df = pd.read_csv(guides_file, sep = '\t', engine = 'c')
-#     elif file_extension == '.csv':
-#         # Read as a comma-separated file
-#         guides_df = pd.read_csv(guides_file, engine = 'c')
-#     else:
-#         raise ValueError("Unsupported file type: {}".format(file_extension))
-#
-#     return guides_df
-#
-# guides_df = read_guides_file(guides_file)
+def read_guides_file(guides_file):
+    file_extension = os.path.splitext(guides_file)[1].lower()
 
-# Modify based on guide file format - Guide file received was in txt format
-guides_df = pd.read_csv(guides_file, sep='\t')
+    if file_extension == '.txt':
+        # Read as a tab-delimited file
+        guides_df = pd.read_csv(guides_file, sep = '\t', engine = 'c')
+    elif file_extension == '.csv':
+        # Read as a comma-separated file
+        guides_df = pd.read_csv(guides_file, engine = 'c')
+    else:
+        raise ValueError("Unsupported file type: {}".format(file_extension))
+
+    return guides_df
+
+guides_df = read_guides_file(guides_file)
 
 """# # Import R1s and R2s.
 # ## pysam way Pysam introduces many other file format compatibilities such as
@@ -611,7 +607,7 @@ r2_true_recombinant_fastq_df = r2_true_recombinant_stacked_df
 # child_directory = os.path.join(script_dir, 'output')
 
 # Define the child directory relative to the current working directory
-child_directory = os.path.join(os.getcwd().strip(), 'output')
+child_directory = os.path.join(os.getcwd(), 'output')
 
 # Ensure the child directory exists
 if not os.path.exists(child_directory):
@@ -675,7 +671,6 @@ print("Reads from matched read groups on whose guides were on were off target an
 print("Reads from recombinant read groups on whose guides were not mathced to a known guide sequence for either R1 and R2 are found in the files prefixed fails.*.")
 print("Good luck and feel free to generally ignore any outputs below here!")
 print("#"*46)
-
 
 """# Just for executable testing below."""
 
