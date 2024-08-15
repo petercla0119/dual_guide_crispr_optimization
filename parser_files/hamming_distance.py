@@ -1,60 +1,197 @@
-# %% 0. Set up notebook and import data
+# -*- coding: utf-8 -*-
+"""dual_guide_parser_v10ipynb with Hamming Distance
 
-# import os
+# 0.   Set up notebook.
+"""
+
+# %% Set up notebook
+
+import os
+
+import os
 # from google.colab import drive
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
-
+import math
+import sys
+# import joblib
+import subprocess
+import argparse
 import gzip
+import textwrap
 import warnings
+
+#!pip install --upgrade tables
+#! pip install biopython
+
+# import tables
+# import requests
+# from Bio import SeqIO
 from Bio.Seq import reverse_complement
 from Bio.SeqIO.QualityIO import FastqGeneralIterator
 from itertools import islice
-# import matplotlib.pyplot as plot
+# Comment out below after testing.
+
+#drive.mount('/content/drive/')
+#os.chdir("/content/drive/Shared drives/CARD_iNDI/scratch/dual_guide_parser")
+# ! pwd
 
 # Set  options for testing.
-guides_file = "/Users/Claire/Downloads/git_clones/dual_guide_crispr_optimization/parser_files/20200513_library_1_2_unbalanced_dJR051.txt"
-r1_file = "/Users/Claire/Downloads/raw_sequencing/JH8105_1_S1_L001_R1_001.fastq.gz"
-r2_file = "/Users/Claire/Downloads/raw_sequencing/JH8105_1_S1_L001_R2_001.fastq.gz"
-N_rows = 1500 # Speed up testing, this just reads the first 10K sequences.
-check_length = 500 # top and bottom of the array, how far to check for whether composed with G.
-guide_1_offset = -999 # -999 is the sentinel value
-guide_2_offset = -999 # -999 is the sentinel value
-read_1_offset = -999 # -999 is the sentinel value
-read_2_offset = -999 # -999 is the sentinel value
-purity = 0.95
-check_reverse = True
 
-# %% 1. Run first part of parser script
+# guides_file = "/Users/Claire/Downloads/git_clones/dual_guide_crispr_optimization/parser_files/20200513_library_1_2_unbalanced_dJR051.txt"
+# r1_file = "/Users/Claire/Downloads/raw_sequencing/JH8105_1_S1_L001_R1_001.fastq.gz"
+# r2_file = "/Users/Claire/Downloads/raw_sequencing/JH8105_1_S1_L001_R2_001.fastq.gz"
+# N_rows = 1500 # Speed up testing, this just reads the first 10K sequences.
+# check_length = 500 # top and bottom of the array, how far to check for whether composed with G.
+# guide_1_offset = -999 # -999 is the sentinel value
+# guide_2_offset = -999 # -999 is the sentinel value
+# read_1_offset = -999 # -999 is the sentinel value
+# read_2_offset = -999 # -999 is the sentinel value
+# purity = 0.95
+# check_reverse = True
+
+Set the options for production.
+
+parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description=textwrap.dedent('''\
+
+#Thanks for trying the dual_guide_parser from CARD + iNDI + DTi.
+#To run this code, you will need to specify the guides_file, this is a file similar to the example 20200513_library_1_2_unbalanced_dJR051.csv.
+#You will need to specify a pair of R1 and R2 files, such as UDP0007_S1_R1_001.fastq.gz and UDP0007_S1_R2_001.fastq.gz.
+#You can also specify the number of read groups you are interested for testing the tool, this relates to the option n_groups.
+#This will only read that many readgroups from the R1 and R2 files, allowing you to speed things up a bit.
+#This code must be run from the working directory that contains the R1 and R2 files, but the guides_file can be anywhere, just
+#specify a full path to the guides file like ~/Desktop/20200513_library_1_2_unbalanced_dJR051.csv.
+#This code attempts to automatically equalize guides and reads. In other words,
+#it will attempt to cut out letters that begin a guide as a rule, or a read. You may also specify these settings
+#manually.
+#This is best run on a large RAM / high CPU set up as the files are quite large.
+#Finally, to run this code, you will need several packages, including biopython. To see the required packages listed, run with the -h option.
+#
+#'''))
+parser.add_argument('--packages', help='Request for packages required to run, and how to install.', action='store_true')
+parser.add_argument('--guides_file', type=str, default='missing', help='Mandatory input filepath. This is a file similar to the example 20200513_library_1_2_unbalanced_dJR051.csv. This can be a complete filepath')
+parser.add_argument('--r1_file', type=str, default='missing', help='Mandatory input file name. An R1 file in your working directory.')
+parser.add_argument('--r2_file', type=str, default='missing', help='Mandatory input file name. An R2 file in your working directory.')
+parser.add_argument('--N_reads', type=int, default=0, help='Optional number of readgroups to test. An integer.')
+parser.add_argument('--guide_1_offset', type=int, default = -999, help='# of characters to truncate from the left of the protospacer_A. Read truncation is not automatic, set accordingly. Default = 0.')
+parser.add_argument('--read_1_offset', type=int, default = -999, help='# of characters to truncate from the left of read_1. Read truncation is not automatic, set accordingly. Default = 0.')
+parser.add_argument('--guide_2_offset', type=int, default = -999, help='# of characters to truncate from the left of the protospacer_B. A Read truncation is not automatic, set accordingly. Default = 0.')
+parser.add_argument('--read_2_offset', type=int, default = -999, help='# of characters to truncate from the left of read_2. Read truncation is not automatic, set accordingly. Default = 0.')
+parser.add_argument('--purity', type=float, default = 0.95, help='minimum percentage of reads with the same beginning to be cut.')
+parser.add_argument('--check_length', type=int, default=500, help='# of rows on the bottom and top of the array to check for concordance of starting letter.')
+parser.add_argument('--check_reverse', action='store_true', help='# match reads against both guide1+reverse_comp(guide2) and guide2_reverse_comp(guide1)')
+
+args = parser.parse_args()
+
+if(args.packages):
+  print("Must have numpy and pandas available. \n Additionally, must install biopython.")
+  print("To install biopython, run pip install biopython, or, if using conda,")
+  print("conda install -c conda-forge biopython")
+  quit()
+
+print("#"*46)
+print("")
+print("Here is some basic info on the command you are about to run.")
+print("Python version info...")
+print(sys.version)
+print("CLI argument info...")
+print("The guides file you are using is", args.guides_file, ".")
+print("The r1 file you are using is", args.r1_file, ".")
+print("The r2 file you are using is", args.r2_file, ".")
+print("How many read groups are only for a quick test and not the full set?", args.N_reads, ".")
+print("")
+print("#"*46)
+
+guides_file = args.guides_file
+r1_file = args.r1_file
+r2_file = args.r2_file
+N_reads = args.N_reads
+N_rows = args.N_reads
+guide_1_offset = args.guide_1_offset
+guide_2_offset = args.guide_2_offset
+read_1_offset = args.read_1_offset
+read_2_offset = args.read_2_offset
+check_length = args.check_length
+purity = args.purity
+check_reverse = args.check_reverse
+
+# Commented out IPython magic to ensure Python compatibility.
+# %tb
+# %% 1. Import data
 """# 1. Import data, this includes concensus guides and R1 + R2 fastqs."""
 
+# Function to read the guide library file in .csv and .txt format
+# TODO: Ensure function runs
+# def read_guides_file(guides_file):
+#     file_extension = os.path.splitext(guides_file)[1].lower()
+#
+#     if file_extension == '.txt':
+#         # Read as a tab-delimited file
+#         guides_df = pd.read_csv(guides_file, sep = '\t', engine = 'c')
+#     elif file_extension == '.csv':
+#         # Read as a comma-separated file
+#         guides_df = pd.read_csv(guides_file, engine = 'c')
+#     else:
+#         raise ValueError("Unsupported file type: {}".format(file_extension))
+#
+#     return guides_df
+#
+# guides_df = read_guides_file(guides_file)
+
+# Modify based on guide file format - Guide file received was in txt format
 guides_df = pd.read_csv(guides_file, sep='\t')
 
+"""# # Import R1s and R2s.
+# ## pysam way Pysam introduces many other file format compatibilities such as
+# ## CRAM/SAM/BAM
+# if (N_rows == 0):
+#   with pysam.FastxFile(r1_file) as fh:
+#     r1_df = pd.DataFrame([(entry.name, entry.sequence, entry.comment, \
+#     entry.quality) for entry in fh], columns=['name','seq', 'comment', 'qual'])
+#   with pysam.FastxFile(r2_file) as fh:
+#     r2_df = pd.DataFrame([(entry.name, entry.sequence, entry.comment, \
+#     entry.quality) for entry in fh], columns=['name','seq', 'comment', 'qual'])
+# else:
+#   with pysam.FastxFile(r1_file) as fh:
+#     r1_df = pd.DataFrame([(entry.name, entry.sequence, entry.comment, \
+#     entry.quality) for entry in islice(fh,0,N_rows)],
+#            columns=['name','seq', 'comment', 'qual'])
+#   with pysam.FastxFile(r2_file) as fh:
+#     r2_df = pd.DataFrame([(entry.name, entry.sequence, entry.comment, \
+#     entry.quality) for entry in islice(fh,0,N_rows)],
+#     columns=['name','seq', 'comment', 'qual'])
+#
+# ## SeqIO way
+# For more compatitibility with other files types will need to import as SeqIO objects.
+# Consider the following suggestions if so.
+# use to_dict for compatibility with more file types and for true dictionary
+# functionality. If files too big, use .index.
+# Otherwise, if more memory needed, instantiate as a list """
+
+# With open the gzip files (r1 and r2) in reading mode ('rt') and assign it to variable ('r1' and 'r2', respectively).
+# Initialize 'r1_it' iterator to iterate over contents in the first file with 'FastqqGeneralIterator'
+# Use of backslash ('\') is a continuation of the 'with' statement across multiple lines of code for better readability
+# Check 'N_rows' is empty. Then create new dataframe from iterator. Dataframe has three columns.
+# Slice 'r1_it' and 'r2_it' from (0) to 'N_rows'. Then create dataframes from the sliced iterator
 with gzip.open(r1_file, mode = 'rt') as r1, \
      gzip.open(r2_file, mode = 'rt') as r2:
   r1_it = FastqGeneralIterator(r1)
   r2_it = FastqGeneralIterator(r2)
 
-  # Find any failed reads. If 'Y' then the read is bad, otherwise 'N'
   if (N_rows == 0):
     r1_df = pd.DataFrame(r1_it, columns=['title', 'seq', 'qual'])
     r2_df = pd.DataFrame(r2_it, columns=['title', 'seq', 'qual'])
   else:
-    # Find any failed reads. If 'Y' then the read is bad, otherwise 'N'
     r1_df = pd.DataFrame(islice(r1_it, 0, N_rows),
                          columns=['title', 'seq', 'qual'])
     r2_df = pd.DataFrame(islice(r2_it, 0, N_rows),
                          columns=['title', 'seq', 'qual'])
 
-# Find any failed reads. If 'Y' then the read is bad, otherwise 'N'
 # Get the index of all sequences with at least one unacceptable quality base
 # Access 'seq' column in 'r1_df' and check each string to see it contains the character 'N'. Returns bool
 removed_r1 = r1_df.seq.str.contains('N')
 removed_r2 = r2_df.seq.str.contains('N')
 
-# 'all_removed' contains the failed reads
 all_removed = removed_r1 | removed_r2
 
 r1_df = r1_df.loc[~all_removed,:]
@@ -137,6 +274,11 @@ if read_2_offset + guide_2_length > original_read_2_length:
   raise IndexError("Read 2 not long enough to sustain truncation " + \
                    "Check input and parameters or manually set offsets.")
 
+# set read lengths based on guide lengths. As above, if the reads are too short
+# there is something wrong with the input and things should be rethought.
+# As long as the read is longer than the guide, the below operations should be
+# safe.
+
 read_1_length = guide_1_length
 read_1_end = read_1_offset + read_1_length
 
@@ -184,11 +326,11 @@ guides_df['protospacer_A_19bp_trimmed'] = [x[guide_1_offset:guide_1_end] \
 guides_df['protospacer_B_19bp_trimmed'] = [x[guide_2_offset:guide_2_end] \
                                            for x in guides_df['protospacer_B']]
 
-# Make guide key columns. Ensure all guide sequences are capitalized
-guides_df['r1_key'] = guides_df['protospacer_A_19bp_trimmed'].str.upper()
+# Make guide key columns.
+guides_df['r1_key'] = guides_df['protospacer_A_19bp_trimmed']
 
-# R2 is tricky as it is the reverse compliment. Flip it and translate using the function below. Ensure all guides sequences are capitalized.
-guides_df['r2_key'] = guides_df['protospacer_B_19bp_trimmed'].apply(lambda x: reverse_complement(x).upper())
+# R2 is tricky as it is the reverse compliment. Flip it and translate using the function below.
+guides_df['r2_key'] = guides_df['protospacer_B_19bp_trimmed'].apply(reverse_complement)
 guides_df['r1_r2_key'] = guides_df['r1_key'] + "_" + guides_df['r2_key']
 
 # Include an option to do the reverse as well
@@ -196,124 +338,11 @@ if check_reverse:
   guides_df['r2_r1_key'] = guides_df['protospacer_B_19bp_trimmed'] + "_" + guides_df['protospacer_A_19bp_trimmed'].apply(reverse_complement)
 
 # Get the guide seqs, these relate to the 19 BP segments in the guide_df.
-r2_df.loc[:,'guide_seq'] = [x[read_2_offset:read_2_end] for x in r2_df.seq]
 r1_df.loc[:,'guide_seq'] = [x[read_1_offset:read_1_end] for x in r1_df.seq]
-
+r2_df.loc[:,'guide_seq'] = [x[read_2_offset:read_2_end] for x in r2_df.seq]
 
 # %% 2. Create function to calculate the Hamming Distance. Sequences must be the same length!
 # TODO: add filter to to tolerate up to 3 nucleotides difference between the guide library
-
-''' # Option 1
-# Function to calculate Hamming distance
-# def hamming_distance(seq1, seq2):
-#     """
-#     Calculate the Hamming distance between two sequences of equal length.
-#
-#     Parameters:
-#     seq1 (str): The first sequence.
-#     seq2 (str): The second sequence.
-#
-#     Returns:
-#     int: The Hamming distance between the sequences.
-#     """
-#     if len(seq1) != len(seq2):
-#         raise ValueError("Sequences must be of the same length")
-#     return sum(el1 != el2 for el1, el2 in zip(seq1, seq2))
-# # Function to calculate the Hamming distance between guide_seq in r1_df and r1_key in guides_df
-# def calculate_hamming_distances(r1_df, guides_df):
-#     """
-#     Calculate the Hamming distance between guide_seq in r1_df and r1_key in guides_df.
-#
-#     Parameters:
-#     r1_df (DataFrame): DataFrame containing the read sequences.
-#     guides_df (DataFrame): DataFrame containing the guide sequences.
-#
-#     Returns:
-#     DataFrame: DataFrame with added column 'min_hamming_distance' containing the minimum Hamming distance for each read.
-#     """
-#     distances = []
-#     for r1_seq in r1_df['guide_seq']:
-#         min_distance = float(3)
-#         for guide_seq in guides_df['r1_key']:
-#             try:
-#                 distance = hamming_distance(r1_seq, guide_seq)
-#                 if distance < min_distance:
-#                     min_distance = distance
-#             except ValueError:
-#                 continue  # Skip sequences of unequal length
-#         distances.append("too different")
-#     r1_df['min_hamming_distance'] = distances
-#     return r1_df
-#
-# # Calculate Hamming distances
-# r1_df = calculate_hamming_distances(r1_df, guides_df)
-# print(r1_df[['guide_seq', 'min_hamming_distance']])
-# ################################################################
-#
-# # Option 2
-# # Define the hamming_distance function (if not already defined)
-# def hamming_distance(seq1, seq2):
-#     if len(seq1) != len(seq2):
-#         raise ValueError("Sequences must be of the same length")
-#     return sum(el1 != el2 for el1, el2 in zip(seq1, seq2))
-#
-# # Define the function to compare sequences and calculate hamming distances
-# def compare_sequences_and_calculate_hamming_distances(r1_df, guides_df):
-#     distances = []
-#     for r1_seq in r1_df['guide_seq']:
-#         min_distance = float('inf')
-#         for guide_seq in all_guides:
-#             try:
-#                 distance = hamming_distance(r1_seq, guide_seq)
-#                 if distance < min_distance:
-#                     min_distance = distance
-#             except ValueError:
-#                 continue  # Skip sequences of unequal length
-#         distances.append(min_distance)
-#     r1_df['min_hamming_distance'] = distances
-#     r1_df.sort_values(by='min_hamming_distance', ascending=True)
-#     return r1_df
-#
-# # Apply the function to the DataFrames
-# r1_df = compare_sequences_and_calculate_hamming_distances(r1_df, guides_df)
-#
-# # Display the result
-# print(r1_df.sort_values(by='min_hamming_distance', ascending=True))
-
-################################################################
-# Option 3
-# Define the hamming_distance function
-# def hamming_distance(seq1, seq2):
-#     if len(seq1) != len(seq2):
-#         raise ValueError("Sequences must be of the same length")
-#     return sum(el1 != el2 for el1, el2 in zip(seq1, seq2))
-
-# Previously used function below. Switched to more efficent function to avoid iterative looping (time consuming)
-# def compare_sequences_and_generate_df(read_df, guides_df, guide_key):
-#     """
-#     Compare the sequences in the guide_seq column of read_df to each element in the r1_key column of guides_df.
-#     Generate a new DataFrame with guide_seq, r1_key, and their Hamming distances.
-# 
-#     Parameters:
-#     read_df (DataFrame): DataFrame containing the read sequences.
-#     guides_df (DataFrame): DataFrame containing the guide sequences.
-#     guide_key (str): The column name in guides_df containing the guide sequences.
-# 
-# 
-#     Returns:
-#     DataFrame: DataFrame with columns 'guide_seq', 'r1_key', and 'hamming_distance'.
-#     """
-#     result_data = []
-#     for read_seq in read_df['guide_seq']:
-#         for guide_seq in guides_df[guide_key]:
-#             try:
-#                 distance = hamming_distance(read_seq, guide_seq)
-#                 result_data.append({'guide_seq': read_seq, guide_key: guide_seq, 'hamming_distance': distance})
-#             except ValueError:
-#                 continue  # Skip sequences of unequal length
-#     result_df = pd.DataFrame(result_data).sort_values(by='hamming_distance', ascending=True)
-#     return result_df
-'''
 
 # Option 4
 # Function Below works, but would ideally be faster
@@ -358,13 +387,14 @@ def compare_sequences_and_generate_df(read_df, guides_df, guide_key):
     # Return the result sorted by Hamming distance
     return merged_df[['guide_seq', guide_key, 'hamming_distance']].sort_values(by='hamming_distance', ascending=True)
 
-# Sample data
-read_df_sample = r1_df.head(10)
-guides_df_sample = guides_df.head(10)
-
-# Run the function on the sample data
-result = compare_sequences_and_generate_df(read_df_sample, guides_df_sample, 'r1_key')
-print(result)
+# # Ensure function works
+# # Sample data
+# read_df_sample = r1_df.head(10)
+# guides_df_sample = guides_df.head(10)
+#
+# # Run the function on the sample data
+# result = compare_sequences_and_generate_df(read_df_sample, guides_df_sample, 'r1_key')
+# print(result)
 
 # %% 3. Calculate the Hamming Distances
 
@@ -372,12 +402,16 @@ print(result)
 
 # Apply the function to for guide in position 1
     # Compare 'guide_seq' to 'r1_key'
+print('Calculating Hamming distances for R1')
 result_df_r1 = compare_sequences_and_generate_df(r1_df, guides_df, 'r1_key')
+
 # Apply the function to for guide in position 2
     # Compare 'guide_seq' to 'r2_key'
+print('Calculating Hamming distances for R2')
 result_df_r2 = compare_sequences_and_generate_df(r2_df, guides_df, 'r2_key')
 
 # Plot histogram of the Hamming distances for Position 1
+print('Plotting histograms of hamming distance for R1 and R2')
 plt.hist(result_df_r1['hamming_distance'], bins=50, label='hamming_distance')
 # Add labels and title
 plt.xlabel('Hamming Distance')
@@ -404,7 +438,6 @@ plt.show()
 # sm_ham_dist_posit_2 = result_df_r2[(result_df_r2['hamming_distance'] <= 3) & (result_df_r2['hamming_distance'] >= 1)]
 
 result_df_r1.groupby('hamming_distance').size().reset_index(name='n')
-
 
 # Filter read_df to keep only rows with hamming_distance < 3 and hamming_distance > 1
 r1_filtered = result_df_r1[(result_df_r1['hamming_distance'] <= 2) & (result_df_r1['hamming_distance'] >= 1)]

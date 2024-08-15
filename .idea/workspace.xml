@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="045592f2-5b82-46ac-9332-08e94c3ecb95" name="Changes" comment="update unversioned files in main branch">
-      <change beforePath="$PROJECT_DIR$/parser_files/dual_guide_parser_v10-2.py" beforeDir="false" afterPath="$PROJECT_DIR$/parser_files/dual_guide_parser_v10-2.py" afterDir="false" />
+    <list default="true" id="045592f2-5b82-46ac-9332-08e94c3ecb95" name="Changes" comment="comment testing lines and uncomment parser args">
       <change beforePath="$PROJECT_DIR$/parser_files/hamming_distance.py" beforeDir="false" afterPath="$PROJECT_DIR$/parser_files/hamming_distance.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -490,7 +489,6 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT_PROFILE" value="Default" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="examine hamming distance between library and reads" />
     <MESSAGE value="update dual-guide workflow schematic&#10;update dual-guide workflow schematic" />
     <MESSAGE value="update dual-guide workflow schematic&#10;update dual-guide workflow schematic" />
     <MESSAGE value="fixup! update dual-guide workflow schematic update dual-guide workflow schematic" />
@@ -515,7 +513,8 @@
     <MESSAGE value="updated dual-guide_workflow.md to include rough estimate of cell numbers" />
     <MESSAGE value="attempt to run in IDE" />
     <MESSAGE value="update unversioned files in main branch" />
-    <option name="LAST_COMMIT_MESSAGE" value="update unversioned files in main branch" />
+    <MESSAGE value="comment testing lines and uncomment parser args" />
+    <option name="LAST_COMMIT_MESSAGE" value="comment testing lines and uncomment parser args" />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -528,7 +527,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" log-message="true" suspend="NONE" type="python-line">
           <url>file://$PROJECT_DIR$/parser_files/hamming_distance.py</url>
-          <line>380</line>
+          <line>414</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
