@@ -42,8 +42,6 @@ Original file is located at
 # %% Set up notebook
 
 import os
-
-import os
 # from google.colab import drive
 import numpy as np
 import pandas as pd
@@ -72,7 +70,7 @@ from itertools import islice
 # ! pwd
 
 # Set  options for testing.
-
+#
 # guides_file = "/Users/Claire/Downloads/git_clones/dual_guide_crispr_optimization/parser_files/20200513_library_1_2_unbalanced_dJR051.txt"
 # r1_file = "/Users/Claire/Downloads/raw_sequencing/JH8105_1_S1_L001_R1_001.fastq.gz"
 # r2_file = "/Users/Claire/Downloads/raw_sequencing/JH8105_1_S1_L001_R2_001.fastq.gz"
@@ -222,6 +220,9 @@ with gzip.open(r1_file, mode = 'rt') as r1, \
     r2_df = pd.DataFrame(islice(r2_it, 0, N_rows),
                          columns=['title', 'seq', 'qual'])
 
+# How many reads are in the raw sequencing files?
+total_r1_df = len(r1_df)
+total_r2_df = len(r2_df)
 # Get the index of all sequences with at least one unacceptable quality base
 # Access 'seq' column in 'r1_df' and check each string to see it contains the character 'N'. Returns bool
 removed_r1 = r1_df.seq.str.contains('N')
@@ -345,8 +346,11 @@ assert guide_2_length == guide_2_end - guide_2_offset, 'Oh no, fix guide_2!'
 r1_df.insert(loc=2, column='plus', value='+')
 r2_df.insert(loc=2, column='plus', value='+')
 
+# Function to split the sequence header from the sequence ID and returns the sequence header. The sequence header contains info about the run and tile coordinates. The sequence ID contains the guide sequence in addition to other info
 def split_str(s: str) -> str:
     return s.split(" ", maxsplit = 1)[0]
+# Function to split the sequence header from the sequence ID and returns the sequence header. The sequence header contains info about the run and tile coordinates. The sequence ID contains the guide sequence in addition to other info
+# Create new 'read_group' column. All values in read_group should be unique
 r1_df['read_group'] = r1_df["title"].apply(split_str)
 r2_df['read_group'] = r2_df["title"].apply(split_str)
 
@@ -356,6 +360,7 @@ r2_df['title'] = '@' + r2_df['title']
 """This next code block defines the r1 and r2 keys that are often 19 BP, also making a reverse complement of r2 key."""
 
 # New as of v5.
+# Create new column, 'protospacer_A_19bp_trimmed', to contain a portion of the original 'protospacer_A' sequence between guide_1_offset and guide_1_end. Also applies to 'protospacer_B'
 guides_df['protospacer_A_19bp_trimmed'] = [x[guide_1_offset:guide_1_end] \
                                            for x in guides_df['protospacer_A']]
 guides_df['protospacer_B_19bp_trimmed'] = [x[guide_2_offset:guide_2_end] \
@@ -364,7 +369,7 @@ guides_df['protospacer_B_19bp_trimmed'] = [x[guide_2_offset:guide_2_end] \
 # Make guide key columns.
 guides_df['r1_key'] = guides_df['protospacer_A_19bp_trimmed']
 
-# R2 is tricky as it is the reverse compliment. Flip it and translate using the function below.
+# R2 is tricky as it is the reverse complement. Flip it and translate using the function from Bio pkg below.
 guides_df['r2_key'] = guides_df['protospacer_B_19bp_trimmed'].apply(reverse_complement)
 guides_df['r1_r2_key'] = guides_df['r1_key'] + "_" + guides_df['r2_key']
 
@@ -373,6 +378,7 @@ if check_reverse:
   guides_df['r2_r1_key'] = guides_df['protospacer_B_19bp_trimmed'] + "_" + guides_df['protospacer_A_19bp_trimmed'].apply(reverse_complement)
 
 # Get the guide seqs, these relate to the 19 BP segments in the guide_df.
+# Iterate through each element in 'x' in the r1_df['seq'] column, then extract the sequence from read_1_offset to read_1_end and store values in a new column, 'guide_seq'
 r1_df.loc[:,'guide_seq'] = [x[read_1_offset:read_1_end] for x in r1_df.seq]
 r2_df.loc[:,'guide_seq'] = [x[read_2_offset:read_2_end] for x in r2_df.seq]
 
@@ -380,26 +386,28 @@ r2_df.loc[:,'guide_seq'] = [x[read_2_offset:read_2_end] for x in r2_df.seq]
 
 """# 2. Identify matching read groups across R1 and R2."""
 
-# Pull the read groups from R1 and R2. Make a concensus read group list.
+# Pull the read groups from R1 and R2. Make a consensus read group list.
 r1_read_groups_df = r1_df[['read_group']]
 r2_read_groups_df = r2_df[['read_group']]
 
+# Consensus contains all read groups from R1 and R2 files
 consensus_read_groups_df = r1_read_groups_df.merge(r2_read_groups_df, on ='read_group', how='inner')
 
 # Quantify obvious pair failures.
-
 r1_N_attempted_read_groups = r1_df.read_group.shape[0]
 r2_N_attempted_read_groups = r1_df.read_group.shape[0]
 consensus_N_read_groups = consensus_read_groups_df.shape[0]
 r1_pcnt_consensus = round((consensus_N_read_groups/r1_N_attempted_read_groups)*100, 2)
 r2_pcnt_consensus = round((consensus_N_read_groups/r2_N_attempted_read_groups)*100, 2)
+all_removed_pct = round((sum(all_removed)/(total_r1_df + total_r2_df))*100, 2)
 
 print("#"*46)
-print(f"R1 had {r1_N_attempted_read_groups} potential read groups, of these {r1_pcnt_consensus} % were among the concensus read groups. \n"
-      f"R2 had {r2_N_attempted_read_groups} potential read groups, of these {r2_pcnt_consensus} % were among the concensus read groups. \n"
+print(f"R1 had {r1_N_attempted_read_groups} potential read groups, of these {r1_pcnt_consensus}% were among the concensus read groups. \n"
+      f"R2 had {r2_N_attempted_read_groups} potential read groups, of these {r2_pcnt_consensus}% were among the concensus read groups. \n"
       f"In total there are {consensus_N_read_groups} read groups that are matching across R1 and R2 for this experiment.")
-print(f"{sum(all_removed)} potential read groups were removed for poor quality reads")
+print(f"{sum(all_removed)} ({all_removed_pct}%) potential read groups were removed from the raw FASTQ files for poor quality reads")
 print("#"*46)
+
 
 # %% 3. Reduce R1 and R2 to only those in the concensus_read_groups df.
 """# 3. Reduce the datasets to the read groups that match in R1 and R2.
@@ -427,13 +435,7 @@ r1_guide_read_df.rename(columns={'guide_seq': 'r1_guide_seq'}, inplace=True)
 r2_guide_read_df = r2_reduced_df[['read_group', 'guide_seq']].copy()
 r2_guide_read_df.rename(columns={'guide_seq': 'r2_guide_seq'}, inplace=True)
 
-# # Build dataset that is used to check for recombination w/in each read group.
-# r1_guide_read_df = r1_reduced_df[['read_group', 'guide_seq']]
-# r1_guide_read_df.rename(columns={'guide_seq':'r1_guide_seq'}, inplace=True)
-#
-# r2_guide_read_df = r2_reduced_df[['read_group', 'guide_seq']]
-# r2_guide_read_df.rename(columns={'guide_seq':'r2_guide_seq'}, inplace=True)
-
+# Merge R1
 combined_guide_read_df = r1_guide_read_df.merge(r2_guide_read_df, on='read_group', how='inner')
 combined_guide_read_df['combined_guide_seqs'] = combined_guide_read_df['r1_guide_seq'] + "_" + combined_guide_read_df['r2_guide_seq']
 
@@ -449,8 +451,10 @@ combined_guide_read_df['uppercase_combined_guide_seqs'] = combined_guide_read_df
 
 combined_guide_read_df['non_recombinant'] = combined_guide_read_df['uppercase_combined_guide_seqs'].isin(uppercase_reference_list)
 
-# Counting hits
+# TODO: differentiate commented try statment vs uncommented try statement. Commented version was originally in v10, uncommented version was orignally in v8 (19_20)
+# # Counting hits
 try:
+    # Count the number of non-recombinant values where non_recombinant = TRUE (ie count values that matched guides in library)
     on_target = combined_guide_read_df['non_recombinant'].value_counts()[True]
 except KeyError:
     warnings.warn("WARNING: There are no on-target hits. Something is probably wrong.",
@@ -465,14 +469,33 @@ except KeyError:
                   category = RuntimeWarning)
     recombinant = 0
 
+# # Try statements in v8
+# try:
+#     # Use .value_counts().iloc[1] to get the second most frequent True/False value. .iloc[1]=False
+#     on_target = combined_guide_read_df['non_recombinant'].value_counts().iloc[1]
+# except IndexError:  # Catching IndexError instead of KeyError because we're dealing with list-like access
+#     warnings.warn("WARNING: There are no on-target hits. Something is probably wrong.", category=RuntimeWarning)
+#     # If fewer than 2
+#     on_target = 0
+#
+# try:
+#     # Use .value_counts().iloc[0] for positional indexing. .iloc[0]=True
+#     recombinant = combined_guide_read_df['non_recombinant'].value_counts().iloc[0]
+# except IndexError:  # Catching IndexError instead of KeyError because we're dealing with list-like access
+#     warnings.warn("WARNING: There are no recombinant hits. Something is probably wrong.", category=RuntimeWarning)
+#     recombinant = 0
+
 total_reads = on_target + recombinant
 on_target_pcnt = round((on_target/total_reads)*100, 2)
 recombinant_pcnt = round((recombinant/total_reads)*100, 2)
 
 print("#"*46)
-print(f"There are a total of {total_reads} potential read groups after filtering, of these {on_target_pcnt} % were on target for R1 and R2. This means {recombinant_pcnt} % are recombinant read groups.")
+print(f"There are a total of {total_reads} potential read groups after filtering, \n"
+      f"Hits: {on_target} ({on_target_pcnt}%) of the {total_reads} were on target for R1 and R2. \n"
+      f"This means {recombinant} ({recombinant_pcnt}%) of the {total_reads} are recombinant read groups.")
 print("#"*46)
 print('\n')
+
 if(on_target_pcnt < 25):
   warnings.warn(f"Not many hits. Check if guides and reads were trimmed " + \
                 f"appropriately. \nread_1 comp: \n{r1_frst_ltrs} \n" + \
@@ -516,15 +539,13 @@ r1_recombinant_df = r1_recombinant_df.copy()  # Ensure we're working with a copy
 r1_recombinant_df['uppercase_guide_seq'] = r1_recombinant_df['guide_seq'].str.upper()
 r2_recombinant_df = r2_recombinant_df.copy()  # Ensure we're working with a copy
 r2_recombinant_df['uppercase_guide_seq'] = r2_recombinant_df['guide_seq'].str.upper()
-# r1_recombinant_df.loc[:, 'uppercase_guide_seq'] = [x.upper() for x in r1_recombinant_df.loc[:, 'guide_seq']]
-# r2_recombinant_df.loc[:, 'uppercase_guide_seq'] = [x.upper() for x in r2_recombinant_df.loc[:, 'guide_seq']]
 
-r1_recombinant_df = r1_recombinant_df.copy()  # Ensure it's a copy, not a view
+# r1_recombinant_df = r1_recombinant_df.copy()  # Ensure it's a copy, not a view
 r1_recombinant_df.loc[:, 'in_guide_library'] = r1_recombinant_df['uppercase_guide_seq'].isin(uppercase_r1_keys)
-r2_recombinant_df = r1_recombinant_df.copy()  # Ensure it's a copy, not a view
+# r2_recombinant_df = r1_recombinant_df.copy()  # Ensure it's a copy, not a view
 r2_recombinant_df.loc[:, 'in_guide_library'] = r2_recombinant_df['uppercase_guide_seq'].isin(uppercase_r2_keys)
-# r1_recombinant_df.loc[:, 'in_guide_library'] = r1_recombinant_df.loc[:, 'uppercase_guide_seq'].isin(uppercase_r1_keys)
-# r2_recombinant_df.loc[:, 'in_guide_library'] = r2_recombinant_df.loc[:, 'uppercase_guide_seq'].isin(uppercase_r2_keys)
+# FIXME: seqs in r2 recomb df dont match anything in r2 keys but ~480 match r1 key
+
 
 # TODO: consider adding function for user input to select permissiveness of output files
     # TODO: matches r1 sequence
@@ -538,6 +559,10 @@ r2_failed_recombinants = r2_recombinant_df[r2_recombinant_df['in_guide_library']
 
 # TODO: add function to calculate hamming distance and tolerate nucleotide substitution of a user-specified value
 
+# recombinant_failed_readgroups = pd.concat((r1_failed_recombinants['read_group'],
+#                                           r2_failed_recombinants['read_group']),
+#                                           axis=0
+#                                           ).unique()
 recombinant_failed_readgroups = pd.concat((r1_failed_recombinants['read_group'],
                                           r2_failed_recombinants['read_group']),
                                           axis=0
@@ -548,7 +573,7 @@ N_big_fails = len(recombinant_failed_readgroups)
     # remember that uppercase_r2_keys maps to the reverse complement of protospacer B
 print(f'Number of R1 failed recombinants: {len(r1_failed_recombinants)}')
 print(f'Number of R2 failed recombinants: {len(r2_failed_recombinants)}')
-print(f'The sum of R1 and R2 failed recombinants: {len(r1_failed_recombinants) + len(r2_failed_recombinants)}')
+# print(f'The sum of R1 and R2 failed recombinants: {len(r1_failed_recombinants) + len(r2_failed_recombinants)}')
 print(f'Number of failed read groups: {N_big_fails}')
 
 # Creates a new column to flag if read groups are in 'recombinant_failed_readgroups'. If yes, then 'big_fail' == True, otherwise False
@@ -563,17 +588,15 @@ r2_recombinant_df.loc[:, 'big_fail'] = r2_recombinant_df.loc[:, 'read_group'].is
 # Read groups/guide seq are in 'recombinant_failed_readgroups'... TODO: Consider sequencing base error?
 r1_failed_recombinants_df = r1_recombinant_df[r1_recombinant_df.loc[:, 'big_fail'] == True]
 r2_failed_recombinants_df = r2_recombinant_df[r2_recombinant_df.loc[:, 'big_fail'] == True]
+r1_true_recombinants_df = r1_recombinant_df[r1_recombinant_df.loc[:, 'big_fail'] == False]
+r2_true_recombinants_df = r2_recombinant_df[r2_recombinant_df.loc[:, 'big_fail'] == False]
+# r1_recombinant_df[r1_recombinant_df['in_guide_library'] == True]
 
 # print(f'{len(r1_recombinant_df[r1_recombinant_df['in_guide_library']==True])}')
 # print(f'{len(r2_recombinant_df[r2_recombinant_df['in_guide_library']==True])}')
 # print('\nNot in guide library')
 # print(f'{len(r1_recombinant_df[r1_recombinant_df['in_guide_library']==False])}')
 # print(f'{len(r2_recombinant_df[r2_recombinant_df['in_guide_library']==False])}')
-
-# Read groups/guide seq are
-r1_true_recombinants_df = r1_recombinant_df[r1_recombinant_df.loc[:, 'big_fail'] == False]
-r2_true_recombinants_df = r2_recombinant_df[r2_recombinant_df.loc[:, 'big_fail'] == False]
-# r1_recombinant_df[r1_recombinant_df['in_guide_library'] == True]
 
 # print(len(r1_true_recombinants_df))
 # print(len(r2_true_recombinants_df))
@@ -586,9 +609,10 @@ num_r2_failed_recombinants = r2_failed_recombinants['read_group']
 
 print("#"*46)
 print(f"Of the {recombinant} recombinant read groups, {N_big_fails} read groups had a sequence not in the guide list, so {big_fail_pcnt} % of recombinants can be considered failures.")
+# TODO: no way 100% of recombinant read groups are failed reads
 print("#"*46)
 
-r1_failed_recombinants['read_group']
+# r1_failed_recombinants['read_group']
 
 # len(r1_failed_recombinants['read_group'])
 
@@ -640,7 +664,6 @@ r1_failed_recombinant_fastq_df.to_csv(r1_failed_recombinant_out_file, sep='\t', 
 r2_failed_recombinant_fastq_df.to_csv(r2_failed_recombinant_out_file, sep='\t', index=False, header=False, compression='gzip')
 
 
-
 # # Define the child directory relative to the current script's location
 # child_directory = os.path.join(os.path.dirname(__name__), 'output')
 #
@@ -676,9 +699,9 @@ print("Reads from recombinant read groups on whose guides were not mathced to a 
 print("Good luck and feel free to generally ignore any outputs below here!")
 print("#"*46)
 
-"""# Just for executable testing below."""
-
-# Commented out IPython magic to ensure Python compatibility.
-# %%bash
-# # python 19bp_dual_guide_parser_tool.py --help
-# python 19_20_var_bp_dual_guide_parser.py --guides_file 20200513_library_1_2_unbalanced_dJR051.csv --r1_file UDP0007_S1_R1_001.fastq.gz --r2_file UDP0007_S1_R2_001.fastq.gz --N_reads 100000
+# """# Just for executable testing below."""
+#
+# # Commented out IPython magic to ensure Python compatibility.
+# # %%bash
+# # # python 19bp_dual_guide_parser_tool.py --help
+# # python 19_20_var_bp_dual_guide_parser.py --guides_file 20200513_library_1_2_unbalanced_dJR051.csv --r1_file UDP0007_S1_R1_001.fastq.gz --r2_file UDP0007_S1_R2_001.fastq.gz --N_reads 100000
