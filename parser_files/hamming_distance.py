@@ -50,7 +50,7 @@ from itertools import islice
 # purity = 0.95
 # check_reverse = True
 
-Set the options for production.
+# Set the options for production.
 
 parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter, description=textwrap.dedent('''\
 
@@ -343,9 +343,6 @@ r2_df.loc[:,'guide_seq'] = [x[read_2_offset:read_2_end] for x in r2_df.seq]
 
 # %% 2. Create function to calculate the Hamming Distance. Sequences must be the same length!
 # TODO: add filter to to tolerate up to 3 nucleotides difference between the guide library
-
-# Option 4
-# Function Below works, but would ideally be faster
 # TODO: ask MM how to make it faster?
 def compare_sequences_and_generate_df(read_df, guides_df, guide_key):
     """
@@ -403,16 +400,16 @@ def compare_sequences_and_generate_df(read_df, guides_df, guide_key):
 # Apply the function to for guide in position 1
     # Compare 'guide_seq' to 'r1_key'
 print('Calculating Hamming distances for R1')
-result_df_r1 = compare_sequences_and_generate_df(r1_df, guides_df, 'r1_key')
+r1_ham_dist_df = compare_sequences_and_generate_df(r1_failed_recombinants_df, guides_df, 'r1_key')
 
 # Apply the function to for guide in position 2
     # Compare 'guide_seq' to 'r2_key'
 print('Calculating Hamming distances for R2')
-result_df_r2 = compare_sequences_and_generate_df(r2_df, guides_df, 'r2_key')
+r2_ham_dist_df = compare_sequences_and_generate_df(r2_failed_recombinants_df, guides_df, 'r2_key')
 
 # Plot histogram of the Hamming distances for Position 1
 print('Plotting histograms of hamming distance for R1 and R2')
-plt.hist(result_df_r1['hamming_distance'], bins=50, label='hamming_distance')
+plt.hist(r1_ham_dist_df['hamming_distance'], bins=50, label='hamming_distance')
 # Add labels and title
 plt.xlabel('Hamming Distance')
 plt.ylabel('Frequency')
@@ -422,7 +419,7 @@ plt.legend()
 plt.show()
 
 # Plot histogram of the Hamming distances for Position 2
-plt.hist(result_df_r2['hamming_distance'], bins=50, label='hamming_distance')
+plt.hist(r2_ham_dist_df['hamming_distance'], bins=50, label='hamming_distance')
 # Add labels and title
 plt.xlabel('Hamming Distance')
 plt.ylabel('Frequency')
@@ -434,31 +431,29 @@ plt.show()
 # %% 4. Print summary tables of Hamming distances
 # View values with a Hamming distance between 1-3
 # # Select the 'hamming_distance' column and filter rows between 1 and 3
-# sm_ham_dist_posit_1 = result_df_r1[(result_df_r1['hamming_distance'] <= 3) & (result_df_r1['hamming_distance'] >= 1)]
-# sm_ham_dist_posit_2 = result_df_r2[(result_df_r2['hamming_distance'] <= 3) & (result_df_r2['hamming_distance'] >= 1)]
 
-result_df_r1.groupby('hamming_distance').size().reset_index(name='n')
+r1_ham_dist_df.groupby('hamming_distance').size().reset_index(name='n')
 
 # Filter read_df to keep only rows with hamming_distance < 3 and hamming_distance > 1
-r1_filtered = result_df_r1[(result_df_r1['hamming_distance'] <= 2) & (result_df_r1['hamming_distance'] >= 1)]
-r2_filtered = result_df_r2[(result_df_r2['hamming_distance'] <= 2) & (result_df_r2['hamming_distance'] >= 1)]
+r1_ham_dist_df_reduced = r1_ham_dist_df[(r1_ham_dist_df['hamming_distance'] <= 2) & (r1_ham_dist_df['hamming_distance'] >= 1)]
+r2_filtered = r2_ham_dist_df[(r2_ham_dist_df['hamming_distance'] <= 2) & (r2_ham_dist_df['hamming_distance'] >= 1)]
 
 # 'r#_filtered' dataframes contain only 1 <= Hamming distance <= 3 for their respective reads.
 # Merge filtered_df with guides_df on the read_key column'
-r1_filtered = pd.merge(r1_filtered, guides_df, on='r1_key', how='inner')
+r1_ham_dist_df_reduced = pd.merge(r1_ham_dist_df_reduced, guides_df, on='r1_key', how='inner')
 r2_filtered = pd.merge(r2_filtered, guides_df, on='r2_key', how='inner')
 
 # Reorder columns for easy viewing
-r1_filtered = r1_filtered[['guide_seq', 'r1_key', 'hamming_distance', 'gene', 'sgID_A', 'sgID_B', 'protospacer_A', 'protospacer_B', 'protospacer_A_19bp_trimmed', 'protospacer_B_19bp_trimmed', 'r2_key', 'r1_r2_key', 'r2_r1_key']]
-r2_filtered = r2_filtered[['guide_seq', 'r2_key', 'hamming_distance', 'gene', 'sgID_A', 'sgID_B', 'protospacer_A', 'protospacer_B', 'protospacer_A_19bp_trimmed', 'protospacer_B_19bp_trimmed', 'r1_key', 'r1_r2_key', 'r2_r1_key']]
+r1_ham_dist_df_reduced = r1_ham_dist_df_reduced[['guide_seq', 'r1_key', 'hamming_distance', 'gene', 'sgID_A', 'sgID_B', 'protospacer_A', 'protospacer_B', 'protospacer_A_19bp_trimmed', 'protospacer_B_19bp_trimmed', 'r2_key', 'r1_r2_key', 'r2_r1_key']]
+r2_ham_dist_df_reduced = r2_ham_dist_df_reduced[['guide_seq', 'r2_key', 'hamming_distance', 'gene', 'sgID_A', 'sgID_B', 'protospacer_A', 'protospacer_B', 'protospacer_A_19bp_trimmed', 'protospacer_B_19bp_trimmed', 'r1_key', 'r1_r2_key', 'r2_r1_key']]
 
 # Calculate the percentage of guides that differ by 1-3 nucleotides
-r1_pct_filtered = round((len(r1_filtered)/len(r1_df))*100, 3)
-r2_pct_filtered = round((len(r2_filtered)/len(r2_df))*100, 3)
+r1_pct_filtered = round((len(r1_ham_dist_df_reduced)/len(r1_df))*100, 3)
+r2_pct_filtered = round((len(r2_ham_dist_df_reduced)/len(r2_df))*100, 3)
 
 # Print summary statements about the Hamming Distances
-print(f'{len(r1_filtered)} gRNAs out of {len(r1_df)} total gRNAs in R1 have a Hamming distance between 1-3 which is {r1_pct_filtered}% of the total guides from R1')
-print(f'{len(r2_filtered)} gRNAs out of {len(r2_df)} total gRNAs in R2 have a Hamming distance between 1-3 which is {r2_pct_filtered}% of the total guides from R2')
+print(f'{len(r1_ham_dist_df_reduced)} gRNAs out of {len(r1_failed_recombinants_df)} of the failed gRNAs in R1 have a Hamming distance between 1-2 which is {r1_pct_filtered}% of the total guides from R1')
+print(f'{len(r2_ham_dist_df_reduced)} gRNAs out of {len(r2_failed_recombinants_df)} of the failed gRNAs in R2 have a Hamming distance between 1-2 which is {r2_pct_filtered}% of the total guides from R2')
 
 
 #######################################################################################################################

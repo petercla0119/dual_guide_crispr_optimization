@@ -5,6 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="045592f2-5b82-46ac-9332-08e94c3ecb95" name="Changes" comment="comment testing lines and uncomment parser args">
+      <change beforePath="$PROJECT_DIR$/.idea/dual_guide_crispr_optimization.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dual_guide_crispr_optimization.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/parser_files/hamming_distance.py" beforeDir="false" afterPath="$PROJECT_DIR$/parser_files/hamming_distance.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -80,31 +82,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.19_20_var_bp_dual_guide_parser_tool.executor&quot;: &quot;Run&quot;,
-    &quot;Python.hamming_distance.executor&quot;: &quot;Run&quot;,
-    &quot;Python.investigate_duplicate_guides.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;full.screen.before.presentation.mode&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;hamming__distance&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/Claire/Downloads/raw_sequencing&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;python.debugger.dataview.coloredbydefault&quot;: &quot;false&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
-    &quot;two.files.diff.last.used.file&quot;: &quot;/Users/Claire/PycharmProjects/dual_guide_crispr_optimization/parser_files/19_20_var_bp_dual_guide_parser_tool.py&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.19_20_var_bp_dual_guide_parser_tool.executor": "Run",
+    "Python.hamming_distance.executor": "Run",
+    "Python.investigate_duplicate_guides.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "full.screen.before.presentation.mode": "true",
+    "git-widget-placeholder": "hamming__distance",
+    "last_opened_file_path": "/Users/Claire/Downloads/raw_sequencing",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "python.debugger.dataview.coloredbydefault": "false",
+    "settings.editor.selected.configurable": "reference.settingsdialog.IDE.editor.colors.General",
+    "two.files.diff.last.used.file": "/Users/Claire/PycharmProjects/dual_guide_crispr_optimization/parser_files/19_20_var_bp_dual_guide_parser_tool.py",
+    "vue.rearranger.settings.migration": "true"
   },
-  &quot;keyToStringList&quot;: {
-    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
-      &quot;Python&quot;,
-      &quot;PLAIN_TEXT&quot;
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "Python",
+      "PLAIN_TEXT"
     ]
   }
-}</component>
+}]]></component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
       <console-settings module-name="dual_guide_crispr_optimization" is-module-sdk="true">
@@ -524,11 +526,6 @@
           <url>file://$USER_HOME$/Downloads/liulab-mageck-c491c3874dca/mageck/mageckCountIO.py</url>
           <line>3</line>
           <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" log-message="true" suspend="NONE" type="python-line">
-          <url>file://$PROJECT_DIR$/parser_files/hamming_distance.py</url>
-          <line>414</line>
-          <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
