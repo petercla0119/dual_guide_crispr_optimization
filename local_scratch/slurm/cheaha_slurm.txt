@@ -1,0 +1,49 @@
+#!/bin/bash
+
+#SBATCH --job-name=getGenome
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=64G
+#SBATCH --partition=short
+#SBATCH --time=01:00:00
+#SBATCH --mail-user=cspeters@uab.edu
+#SBATCH --output=%x_%j.out
+#SBATCH --error=%x_%j.err
+
+module load python36
+module load Anaconda3
+conda activate dual_guide
+cd dual-guide_crispr_optimization
+
+python dual_guide_parser_v10-3.py --guides_file 20200513_library_1_2_unbalanced_dJR051.txt --r1_file JH8105_1_S1_L001_R1_001.fastq.gz --r2_file JH8105_1_S1_L001_R2_001.fastq.gz
+
+
+job id 29023819
+
+/Users/Claire/Library/CloudStorage/Box-Box/MSTP Research Rotations/Summer_2024_Might_Ward_Lab/CRISPRi_screenfiles/CRISPRi_alg_optimization/counts
+
+
+script python MAGeCK-iNC.py
+counts file:
+--> /Users/Claire/Library/CloudStorage/Box-Box/MSTP\ Research\ Rotations/Summer_2024_Might_Ward_Lab/CRISPRi_screenfiles/CRISPRi_alg_optimization/counts/all.count.txt
+fdr:
+--> 0.05
+control_group label (if more than 1, separate by ,):
+--> Low_1,Low_2,Low_3
+counts threshold_control_groups:
+--> 100
+treatment_group label (if more than 1, separate by ,):
+--> High_1,High_2,High_3
+counts threshold_treatment_groups:
+--> 100
+output folder:
+--> /Users/Claire/Library/CloudStorage/Box-Box/MSTP\ Research\ Rotations/Summer_2024_Might_Ward_Lab/CRISPRi_screenfiles/CRISPRi_alg_optimization/counts
+comparison name:
+--> t0_vs_t10
+path of gene list to label: (enter 0 for not labeling genes)
+--> 0
+label all hit genes? (0 or 1)
+--> 0
+plot (0 or 1)?
+--> 1

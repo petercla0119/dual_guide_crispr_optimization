@@ -1,0 +1,32 @@
+#!/bin/bash
+
+#SBATCH --job-name=slurm_array       ### Name of the job
+#SBATCH --nodes=1                    ### Number of Nodes
+#SBATCH --ntasks=1                   ### Number of Tasks
+#SBATCH --cpus-per-task=1            ### Number of Tasks per CPU
+#SBATCH --mem=4G                     ### Memory required, 4 gigabyte
+#SBATCH --partition=express          ### Cheaha Partition
+#SBATCH --time=01:00:00              ### Estimated Time of Completion, 1 hour
+#SBATCH --output=%x_%A_%a.out        ### Slurm Output file, %x is job name, %A is array job id, %a is array job index
+#SBATCH --error=%x_%A_%a.err         ### Slurm Error file, %x is job name, %A is array job id, %a is array job index
+#SBATCH --array=0-2                  ### Number of Slurm array tasks, 3 tasks
+
+### Loading Anaconda3 module to activate `pytools-env` conda environment
+module load python36
+module load Anaconda3
+conda activate dual_guide
+cd dual-guide_crispr_optimization
+
+FILE="/home/cspeters/stmn2_names.txt"
+
+LINE_NUMBER=${SLURM_ARRAY_TASK_ID}
+PAIR=$(sed -n "${LINE_NUMBER}p" $FILE)
+echo $LINE_NUMBER
+echo $PAIR
+
+### Run the python script with input arguments and append the results to a .txt file for each task
+#python dual_guide_parser_v10-3.py --guides_file 20200513_library_1_2_unbalanced_dJR051.txt --r1_file JH8105_1_S1_L001_R1_001.fastq.gz --r2_file JH8105_1_S1_L001_R2_001.fastq.gz $start $end 2>&1 | awk -v task_id=$SLURM_ARRAY_TASK_ID '{print "array task " task_id, $0}' >> output_all_tasks.txt
+
+
+support@listserv.uab.edu
+prema@uab.edu

@@ -1,0 +1,6 @@
+dual-guide_crispr_optimization/JH8105_1_S1_L001_R1_001.fastq.gz
+dual-guide_crispr_optimization/JH8105_1_S1_L001_R2_001.fastq.gz
+dual-guide_crispr_optimization/JH8105_1_S1_L002_R1_001.fastq.gz
+dual-guide_crispr_optimization/JH8105_1_S1_L002_R2_001.fastq.gz
+dual-guide_crispr_optimization/JH8105_2_S2_L001_R1_001.fastq.gz
+dual-guide_crispr_optimization/JH8105_2_S2_L001_R2_001.fastq.gz
